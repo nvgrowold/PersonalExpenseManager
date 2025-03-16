@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/colorPurple">  <!-- Fix: Set ripple effect to Purple -->
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorPrimaryDark"/>  <!-- Default color -->
+            <corners android:radius="70dp"/>
+        </shape>
+    </item>
+</ripple>

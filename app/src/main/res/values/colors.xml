@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <color name="colorPrimaryDark">#3262C4</color>
+    <color name="colorPurple">#B29AD1</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorRed">#C11515</color>
+    <color name="colorGreen">#008577</color>
+    <color name="colorLightBlue">#93A5CF</color>
+    <color name="colorLightGreen">#E4EfE9</color>
+    <color name="colorBrightGreen">#00df9a</color>
+
+</resources>
