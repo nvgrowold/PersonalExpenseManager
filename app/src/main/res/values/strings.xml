@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PersonalExpenseManager</string>
+
+
+    <!-- Dropdown Data for User Role -->
+    <string-array name="userRoles_array">
+        <item>User</item>
+        <item>Admin</item>
+        <item>Accountant</item>
+    </string-array>
+
 </resources>

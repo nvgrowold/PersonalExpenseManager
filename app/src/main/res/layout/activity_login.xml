@@ -84,7 +84,7 @@
         android:layout_marginTop="48dp"
         android:background="@drawable/button_hover"
         android:text="Login"
-        android:textColor="@color/colorBrightGreen"
+        android:textColor="@color/colorLessBrightGreen"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/text_view_forgot_password"

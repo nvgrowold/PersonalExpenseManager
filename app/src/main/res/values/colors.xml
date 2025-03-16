@@ -9,5 +9,6 @@
     <color name="colorLightBlue">#93A5CF</color>
     <color name="colorLightGreen">#E4EfE9</color>
     <color name="colorBrightGreen">#00df9a</color>
+    <color name="colorLessBrightGreen">#01875C</color>
 
 </resources>

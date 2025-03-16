@@ -3,6 +3,7 @@ package com.example.personalexpensemanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -14,6 +15,10 @@ import androidx.core.view.WindowInsetsCompat;
 public class RegisterActivity extends AppCompatActivity {
 
     TextView tvAlreadyHaveAccount;
+    Spinner roleSpinner;
+    String[] userRoles;
+
+    UserRoleSpinnerAdapter userRoleSpinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +40,13 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        //dropdown spinner
+        roleSpinner = findViewById(R.id.spinner_user_role);
+        userRoles = getResources().getStringArray(R.array.userRoles_array);
+
+        userRoleSpinnerAdapter = new UserRoleSpinnerAdapter(RegisterActivity.this, userRoles);
+        roleSpinner.setAdapter(userRoleSpinnerAdapter);
+
     }
 }
