@@ -11,12 +11,16 @@ import com.example.personalexpensemanager.db.utility.Role;
 import org.jetbrains.annotations.NotNull;
 
 //User table of RoomDB
-@Entity(indices = {@Index(value = {"username"}, unique = true),
-                   @Index(value = {"email"}, unique = true)})
+//@Entity(indices = {@Index(value = {"username"}, unique = true),
+//                   @Index(value = {"email"}, unique = true)})
+
+/**
+ * Represents a User in the system. Designed for Firestore storage.
+ */
 public class User {
 
-    @PrimaryKey(autoGenerate = true)
-    private int uid;
+//    @PrimaryKey(autoGenerate = true)
+    private String firebaseUid; // Use Firebase UID instead of auto-generated Room ID
     @NotNull
     private String username; //required, unique
     @NotNull
@@ -24,26 +28,31 @@ public class User {
     @NotNull
     private String password; //required, store in hash
     @NotNull
-    private Role role; //required, three type of roles: USER, ADMIN, ACCOUNTANT
+    private String role; //required, three type of roles: USER, ADMIN, ACCOUNTANT
+//                         Store role as String instead of Enum for Firestore compatibility
     @NotNull
     private String balance = "0.00"; //required, decimal(10,2), default(0,0)
 
+    /**
+     * Default constructor required for Firestore deserialization.
+     */
     public User() {}
 
-    public User(@NotNull String username, @NotNull String email, @NotNull String password, @NotNull Role role, @NotNull String balance) {
+    public User(String firebaseUid, @NotNull String username, @NotNull String email, @NotNull String password, @NotNull String role, @NotNull String balance) {
+        this.firebaseUid = firebaseUid;
         this.username = username;
         this.email = email;
-        this.password = hashPassword(password);
+        this.password = hashPassword(password); // Hash password before storing
         this.role = role;
         this.balance = balance;
     }
 
-    public int getUid() {
-        return uid;
+    public String getFirebaseUid() {
+        return firebaseUid;
     }
 
-    public void setUid(int uid) {
-        this.uid = uid;
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
     }
 
     public @NotNull String getUsername() {
@@ -67,14 +76,14 @@ public class User {
     }
 
     public void setPassword(@NotNull String password) {
-        this.password = password;
+        this.password = hashPassword(password);
     }
 
-    public @NotNull Role getRole() {
+    public @NotNull String getRole() {
         return role;
     }
 
-    public void setRole(@NotNull Role role) {
+    public void setRole(@NotNull String role) {
         this.role = role;
     }
 
