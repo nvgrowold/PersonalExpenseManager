@@ -2,6 +2,7 @@ package com.example.personalexpensemanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -102,6 +103,12 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "All fields are required!", Toast.LENGTH_LONG).show();
                     return;
                 }
+
+                if (password.length() < 6) {  // Password length validation
+                    Toast.makeText(RegisterActivity.this, "Password must be at least 6 characters!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 if (!password.equals(confirmPassword)) {
                     Toast.makeText(RegisterActivity.this, "Passwords do not match!", Toast.LENGTH_LONG).show();
                     return;
@@ -118,7 +125,10 @@ public class RegisterActivity extends AppCompatActivity {
                                 registerUser(username, email, password, selectedRole);
                             }
                         })
-                        .addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Error checking user!", Toast.LENGTH_LONG).show());
+                        .addOnFailureListener(e -> {
+                            Log.e("Firestore", "Error checking user: " + e.getMessage(), e);
+                            Toast.makeText(RegisterActivity.this, "Error checking users: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
             }
         });
     }
@@ -145,7 +155,7 @@ public class RegisterActivity extends AppCompatActivity {
                             /**db.collection("users") → Get the "users" collection in Firestore.
                              .document(firebaseUid) → Create a document for the user (uses UID as the document name).
                              .set(user) → Save the user HashMap data inside Firestore.**/
-                            db.collection("user").document(firebaseUid)
+                            db.collection("users").document(firebaseUid)
                                     .set(user)
                                     .addOnSuccessListener(aVoid -> {//if query success, run this
                                         Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_LONG).show();

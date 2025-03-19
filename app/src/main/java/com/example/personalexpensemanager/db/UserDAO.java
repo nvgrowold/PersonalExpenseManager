@@ -22,7 +22,7 @@ public interface UserDAO { // DAO -- Data Access Object
      * If the user already exists, it will be replaced.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertUser(User user);
+    void insertUser(UserEntity user);
 
 //In Room’s SQL syntax, :parameter_name is a placeholder (binding variable).
 //It allows dynamic query execution using method parameters.
@@ -30,13 +30,13 @@ public interface UserDAO { // DAO -- Data Access Object
     /**
      * Deletes a specific user from the local cache.
      */
-    @Delete
-    void deleteUser(User user);
+//    @Delete
+//    void deleteUser(User user);
 
     /**
      * Clears all user data from the local cache (e.g., on logout).
      */
-    @Query("DELETE FROM User")
+    @Query("DELETE FROM users")
     void deleteAllUsers();
 
 

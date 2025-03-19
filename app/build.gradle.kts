@@ -33,13 +33,14 @@ android {
 }
 
 dependencies {
+    implementation("com.google.firebase:firebase-auth:22.1.2")
+    implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("com.google.android.gms:play-services-auth:20.7.0") // ✅ Required for Google Sign-In
 
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -55,5 +56,8 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     //BCrypt: password hashing
     implementation("org.mindrot:jbcrypt:0.4")
+
 }
 
+// ✅ Apply the Google Services plugin at the BOTTOM of the file
+apply(plugin = "com.google.gms.google-services")

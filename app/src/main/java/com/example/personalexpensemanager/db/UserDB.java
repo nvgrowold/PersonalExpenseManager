@@ -12,7 +12,7 @@ import androidx.room.RoomDatabase;
  * Firestore is the primary database.
  */
 
-@Database(entities = {User.class}, version = 1, exportSchema = false)
+@Database(entities = {UserEntity.class}, version = 1, exportSchema = false)
 public abstract class UserDB extends RoomDatabase { //defines UserDB as a subclass of RoomDatabase
                                                     //abstract because Room generates the implementation at runtime.
 
@@ -27,6 +27,12 @@ public abstract class UserDB extends RoomDatabase { //defines UserDB as a subcla
 
     //build a userDB
     public static UserDB getInstance(Context context){
+        boolean USE_ROOM_DB = false; // Toggle this to enable/disable RoomDB
+
+        if (!USE_ROOM_DB) {
+            return null; // Skip RoomDB initialization
+        }
+
         if(INSTANCE == null){  // First check (without synchronization)
             synchronized (UserDB.class) { // Use synchronized to prevent multiple threads from creating separate instances.
                 if (INSTANCE == null) {  // Second check (with synchronization)
