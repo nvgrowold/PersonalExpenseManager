@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,12 +15,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
 
     ImageView ivGif_Money;
-
     Button btnStart;
+    FirebaseAuth auth;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -35,6 +39,10 @@ public class HomeActivity extends AppCompatActivity {
 
         ivGif_Money = findViewById(R.id.IV_gif_money_flying);
         btnStart = findViewById(R.id.btn_get_started);
+        auth = FirebaseAuth.getInstance();
+
+        // ✅ Ensure Google Play Services is available
+        checkGooglePlayServices();
 
         //play home page gif
         Glide.with(HomeActivity.this).load(R.drawable.gif_money_flying).into(ivGif_Money);
@@ -46,8 +54,16 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
+    // Method to check if Google Play Services is available
+    private void checkGooglePlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int status = apiAvailability.isGooglePlayServicesAvailable(this);
 
-
+        if (status != ConnectionResult.SUCCESS) {
+            apiAvailability.makeGooglePlayServicesAvailable(this);
+            Toast.makeText(this, "Google Play Services is required for Firebase Authentication", Toast.LENGTH_LONG).show();
+        }
     }
 }

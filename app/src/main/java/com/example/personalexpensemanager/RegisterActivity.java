@@ -56,6 +56,12 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btn_register);
         tvAlreadyHaveAccount = findViewById(R.id.text_view_already_have_account);
 
+        //set input fields' Hint behavior, when user click hint gone
+        setHintBehavior(etUsername, "Username");
+        setHintBehavior(etEmail, "Email");
+        setHintBehavior(etPassword, "******");
+        setHintBehavior(etConfirmPassword, "******");
+
         //Initialize Firebase Authentication and Firestore
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -168,8 +174,19 @@ public class RegisterActivity extends AppCompatActivity {
                         } else { //if create user fail, run this
                                 Toast.makeText(RegisterActivity.this, "Authentication Failed!", Toast.LENGTH_LONG).show();
                         }
+                });
 
-                    });
+    }
 
+    private void setHintBehavior(EditText editText, String hintText){
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(hasFocus){
+                editText.setHint("");
+            } else {
+                if (editText.getText().toString().isEmpty()){
+                    editText.setHint(hintText);
+                }
+            }
+        });
     }
 }

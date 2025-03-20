@@ -33,8 +33,8 @@ android {
 }
 
 dependencies {
-    implementation("com.google.firebase:firebase-auth:22.1.2")
-    implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.firebase:firebase-firestore:24.10.2")
     implementation("com.google.android.gms:play-services-auth:20.7.0") // ✅ Required for Google Sign-In
 
     implementation(libs.appcompat)

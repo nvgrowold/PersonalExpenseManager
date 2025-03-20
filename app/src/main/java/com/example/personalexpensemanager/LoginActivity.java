@@ -2,8 +2,12 @@ package com.example.personalexpensemanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,9 +15,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class LoginActivity extends AppCompatActivity {
 
-    TextView tv_register;
+    TextView tv_register, tv_forgotPassword;
+    EditText etEmail, etPassword;
+    Button btnLogin;
+
+    FirebaseAuth auth;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +38,66 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
+        btnLogin = findViewById(R.id.btn_Login);
+        etEmail = findViewById(R.id.et_email);
+        etPassword = findViewById(R.id.et_Password);
+        tv_forgotPassword = findViewById(R.id.text_view_forgot_password);
         tv_register = findViewById(R.id.text_view_register);
+
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         tv_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String emailInput = etEmail.getText().toString();
+                String passwordInput = etPassword.getText().toString();
+
+                //user input validation
+                if(emailInput.isEmpty() || passwordInput.isEmpty()){
+                    Toast.makeText(LoginActivity.this, "All fields are required!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (passwordInput.length() < 6) {  // Password length validation
+                    Toast.makeText(LoginActivity.this, "Password must be at least 6 characters!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //check if user email exists in Firestore
+                db.collection("users").whereEqualTo("email", emailInput).get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            if(queryDocumentSnapshots.isEmpty()){
+                                Toast.makeText(LoginActivity.this, "User email does not exist!", Toast.LENGTH_LONG).show();
+                            } else {
+                                loginUser(emailInput, passwordInput);
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Firestore", "Error checking user: " + e.getMessage(), e);
+                            Toast.makeText(LoginActivity.this, "Error checking users: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+            }
+
+            //Login user in firebase with email and password
+            private void loginUser(String emailInput, String passwordInput) {
+                auth.signInWithEmailAndPassword(emailInput, passwordInput)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_LONG).show();
+                            }
+                        });
             }
         });
     }
