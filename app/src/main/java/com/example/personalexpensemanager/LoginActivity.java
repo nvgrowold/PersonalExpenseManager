@@ -27,6 +27,8 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseFirestore db;
 
+    Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +45,10 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.et_Password);
         tv_forgotPassword = findViewById(R.id.text_view_forgot_password);
         tv_register = findViewById(R.id.text_view_register);
+
+        //set input fields' Hint behavior, when user click hint gone
+        setHintBehavior(etEmail, "Email");
+        setHintBehavior(etPassword, "******");
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -90,14 +96,47 @@ public class LoginActivity extends AppCompatActivity {
                 auth.signInWithEmailAndPassword(emailInput, passwordInput)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()){
-                                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                                startActivity(intent);
-                                finish();
+                                String userID = auth.getCurrentUser().getUid();
+                                db.collection("users").document(userID).get()
+                                                .addOnSuccessListener(documentSnapshot -> {
+                                                   if(documentSnapshot.exists()){
+                                                       String role = documentSnapshot.getString("role");
+                                                       if ("Admin".equalsIgnoreCase(role)){
+                                                           intent = new Intent(LoginActivity.this, DashboardAdminActivity.class);
+                                                       }
+                                                       else if ("Accountant".equalsIgnoreCase(role)){
+                                                           intent = new Intent(LoginActivity.this, DashboardAccountantActivity.class);
+                                                       } else{
+                                                           intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                                                       }
+                                                       Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                                                       startActivity(intent);
+                                                       finish();
+                                                   }else {
+                                                       Toast.makeText(LoginActivity.this, "User data not found!", Toast.LENGTH_LONG).show();
+                                                   }
+                                                })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("Firestore", "Error fetching user role: " + e.getMessage(), e);
+                                            Toast.makeText(LoginActivity.this, "Error fetching user data", Toast.LENGTH_LONG).show();
+                                        });
                             } else {
                                 Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_LONG).show();
                             }
                         });
+            }
+        });
+    }
+
+    //remove hint when user click and type in input field
+    private void setHintBehavior(EditText editText, String hintText){
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(hasFocus){
+                editText.setHint("");
+            } else {
+                if (editText.getText().toString().isEmpty()){
+                    editText.setHint(hintText);
+                }
             }
         });
     }

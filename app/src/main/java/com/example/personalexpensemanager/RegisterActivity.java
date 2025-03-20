@@ -178,6 +178,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    //remove hint when user click and type in input field
     private void setHintBehavior(EditText editText, String hintText){
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if(hasFocus){
