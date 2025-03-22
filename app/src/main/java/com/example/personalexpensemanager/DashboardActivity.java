@@ -7,6 +7,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.personalexpensemanager.transaction.DateHeader;
+import com.example.personalexpensemanager.transaction.Transaction;
+import com.example.personalexpensemanager.transaction.TransactionAdapter;
+import com.example.personalexpensemanager.transaction.TransactionItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -20,5 +30,19 @@ public class DashboardActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        //load recent transactions to recyclerView
+        RecyclerView rv = findViewById(R.id.rv_transactions);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+
+        List<TransactionItem> items = new ArrayList<>();
+        items.add(new DateHeader("Sun 23 Mar"));
+        items.add(new Transaction("uid", "Groceries", "GRACE JOEL", "desc", "expense", 4.50, null));
+        items.add(new DateHeader("Sat 22 Mar"));
+        items.add(new Transaction("uid", "Grocery", "New World", "desc", "expense", 51.83, null));
+        items.add(new Transaction("uid", "Savings", "Rapid Save", "desc", "expense", 100.00, null));
+
+        TransactionAdapter adapter = new TransactionAdapter(items);
+        rv.setAdapter(adapter);
     }
 }

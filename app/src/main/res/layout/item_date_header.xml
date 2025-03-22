@@ -6,4 +6,4 @@
     android:text="Sun 23 Mar"
     android:textSize="14sp"
     android:textStyle="bold"
-    android:textColor="@android:color/black" />
+    />

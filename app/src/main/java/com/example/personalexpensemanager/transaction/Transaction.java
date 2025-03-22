@@ -1,8 +1,8 @@
-package com.example.personalexpensemanager.model;
+package com.example.personalexpensemanager.transaction;
 
 import com.google.firebase.Timestamp;
 
-public class Transaction {
+public class Transaction  implements TransactionItem{
 
     private String tid;             // Unique ID (optional - Firestore doc ID can be used)
     private String firebaseUid;    // Foreign Key - User ID
@@ -68,7 +68,7 @@ public class Transaction {
         this.description = description;
     }
 
-    public String getType() {
+    public String getTransactionType() {
         return type;
     }
 
@@ -90,5 +90,10 @@ public class Transaction {
 
     public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    @Override
+    public int getType() {
+        return TYPE_TRANSACTION;
     }
 }
