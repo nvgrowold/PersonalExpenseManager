@@ -17,6 +17,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.personalexpensemanager.utility.InputHintRemover;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -57,10 +58,10 @@ public class RegisterActivity extends AppCompatActivity {
         tvAlreadyHaveAccount = findViewById(R.id.text_view_already_have_account);
 
         //set input fields' Hint behavior, when user click hint gone
-        setHintBehavior(etUsername, "Username");
-        setHintBehavior(etEmail, "Email");
-        setHintBehavior(etPassword, "******");
-        setHintBehavior(etConfirmPassword, "******");
+        InputHintRemover.setHintBehavior(etUsername, "Username");
+        InputHintRemover.setHintBehavior(etEmail, "Email");
+        InputHintRemover.setHintBehavior(etPassword, "******");
+        InputHintRemover.setHintBehavior(etConfirmPassword, "******");
 
         //Initialize Firebase Authentication and Firestore
         auth = FirebaseAuth.getInstance();
@@ -177,17 +178,17 @@ public class RegisterActivity extends AppCompatActivity {
                 });
 
     }
-
-    //remove hint when user click and type in input field
-    private void setHintBehavior(EditText editText, String hintText){
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if(hasFocus){
-                editText.setHint("");
-            } else {
-                if (editText.getText().toString().isEmpty()){
-                    editText.setHint(hintText);
-                }
-            }
-        });
-    }
+//
+//    //remove hint when user click and type in input field
+//    private void setHintBehavior(EditText editText, String hintText){
+//        editText.setOnFocusChangeListener((v, hasFocus) -> {
+//            if(hasFocus){
+//                editText.setHint("");
+//            } else {
+//                if (editText.getText().toString().isEmpty()){
+//                    editText.setHint(hintText);
+//                }
+//            }
+//        });
+//    }
 }

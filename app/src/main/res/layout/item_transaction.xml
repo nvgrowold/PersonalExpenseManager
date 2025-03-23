@@ -14,16 +14,17 @@
     <TextView
         android:id="@+id/tv_merchant"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="Transaction Name"
-        android:textSize="14sp" />
+        android:textColor="@color/colorBrightGreen"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tv_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="- $25.00"
-        android:textSize="14sp"
-        />
+        android:textColor="@color/colorBrightGreen"
+        android:textSize="16sp" />
 </LinearLayout>

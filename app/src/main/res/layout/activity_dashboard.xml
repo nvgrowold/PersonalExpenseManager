@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBlack"
     tools:context=".DashboardActivity">
 
     <TextView
@@ -12,6 +13,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello, username"
+        android:textColor="@color/colorBrightGreen"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.076"
@@ -21,9 +25,9 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_avatar"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:layout_marginStart="36dp"
+        android:layout_width="72dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="32dp"
         android:contentDescription="User Avatar"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -39,6 +43,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:background="@android:color/transparent"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="48dp"
         app:cardElevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -51,6 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@drawable/input_bg"
             android:padding="16dp">
 
             <TextView
@@ -60,7 +67,8 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="8dp"
                 android:text="Account Balance"
-                android:textSize="16sp"
+                android:textColor="@color/colorBrightGreen"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -72,7 +80,8 @@
                 android:inputType="numberDecimal"
                 android:text="$2,000,000.00"
                 android:textAlignment="center"
-                android:textSize="14sp" />
+                android:textColor="@color/colorBrightGreen"
+                android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -85,16 +94,17 @@
         android:layout_marginBottom="-35dp"
         app:cardCornerRadius="24dp"
         app:cardElevation="12dp"
+        android:background="@android:color/black"
+        app:cardBackgroundColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="@id/card_main"
-        app:layout_constraintStart_toStartOf="@id/card_main"
-        >
+        app:layout_constraintStart_toStartOf="@id/card_main">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:background="@drawable/input_bg"
             android:gravity="center"
-            >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_income"
@@ -103,7 +113,8 @@
                 android:layout_marginTop="12dp"
                 android:drawableLeft="@drawable/icon_arrow_circle_down"
                 android:text="Income"
-                android:textSize="12dp" />
+                android:textColor="@color/colorBrightGreen"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_income_amount"
@@ -111,10 +122,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="2dp"
-                android:textColor="@color/colorBrightBlue"
-                android:textSize="10dp"
                 android:text="$2,000.00"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/colorBrightBlue"
+                android:textSize="14sp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
@@ -127,16 +138,17 @@
         android:layout_marginBottom="-35dp"
         app:cardCornerRadius="24dp"
         app:cardElevation="12dp"
+        android:background="@android:color/black"
+        app:cardBackgroundColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="@id/card_main"
-        app:layout_constraintEnd_toEndOf="@id/card_main"
-        >
+        app:layout_constraintEnd_toEndOf="@id/card_main">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:gravity="center"
-            >
+            android:background="@drawable/input_bg"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_expense"
@@ -145,17 +157,18 @@
                 android:layout_marginTop="12dp"
                 android:drawableLeft="@drawable/icon_arrow_circle_up"
                 android:text="Expense"
-                android:textSize="12dp" />
+                android:textColor="@color/colorBrightGreen"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_expense_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:textSize="10dp"
-                android:textColor="@color/colorRed"
                 android:text="-$2,000.00"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/colorRed"
+                android:textSize="14sp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
@@ -165,7 +178,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Recent Transactions"
-        android:textSize="12dp"
+        android:textColor="@color/colorBrightGreen"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.101"
@@ -175,29 +190,42 @@
 
     <ImageButton
         android:id="@+id/imageButton_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="44dp"
+        android:layout_height="41dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.869"
+        app:layout_constraintHorizontal_bias="0.843"
         app:layout_constraintStart_toEndOf="@+id/tv_recent_transactions"
         app:layout_constraintTop_toBottomOf="@+id/card_right_floating"
-        app:layout_constraintVertical_bias="0.034"
+        app:layout_constraintVertical_bias="0.033"
         app:srcCompat="@drawable/icon_add" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_transactions"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:clipToPadding="false"
+        android:paddingBottom="96dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton_add"
         tools:listitem="@layout/item_transaction" />
+
+    <!--    reuse cardview float bottom nav -->
+    <include
+        android:id="@+id/bottom_nav"
+        layout="@layout/cardview_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:elevation="12dp"
+        android:translationZ="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

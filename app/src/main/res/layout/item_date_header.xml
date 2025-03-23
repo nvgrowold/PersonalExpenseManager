@@ -4,6 +4,6 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:text="Sun 23 Mar"
-    android:textSize="14sp"
-    android:textStyle="bold"
-    />
+    android:textColor="@color/colorBrightGreen"
+    android:textSize="16sp"
+    android:textStyle="bold" />

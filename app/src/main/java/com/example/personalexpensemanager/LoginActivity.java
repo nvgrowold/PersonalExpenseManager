@@ -15,6 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.personalexpensemanager.utility.InputHintRemover;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -47,8 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         tv_register = findViewById(R.id.text_view_register);
 
         //set input fields' Hint behavior, when user click hint gone
-        setHintBehavior(etEmail, "Email");
-        setHintBehavior(etPassword, "******");
+        InputHintRemover.setHintBehavior(etEmail, "Email");
+        InputHintRemover.setHintBehavior(etPassword, "******");
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -128,16 +129,16 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    //remove hint when user click and type in input field
-    private void setHintBehavior(EditText editText, String hintText){
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if(hasFocus){
-                editText.setHint("");
-            } else {
-                if (editText.getText().toString().isEmpty()){
-                    editText.setHint(hintText);
-                }
-            }
-        });
-    }
+//    //remove hint when user click and type in input field
+//    private void setHintBehavior(EditText editText, String hintText){
+//        editText.setOnFocusChangeListener((v, hasFocus) -> {
+//            if(hasFocus){
+//                editText.setHint("");
+//            } else {
+//                if (editText.getText().toString().isEmpty()){
+//                    editText.setHint(hintText);
+//                }
+//            }
+//        });
+//    }
 }
