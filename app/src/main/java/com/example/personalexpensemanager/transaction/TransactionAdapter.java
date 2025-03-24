@@ -16,10 +16,17 @@ import java.util.List;
 
 public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    //delare the interface at class level
+    //click to view detail of a transaction
+    public interface OnTransactionClickListener {
+        void onTransactionClick(Transaction transaction);
+    }
     private List<TransactionItem> items;
+    private OnTransactionClickListener listener;   //click to view detail of a transaction
 
-    public TransactionAdapter(List<TransactionItem> items){
+    public TransactionAdapter(List<TransactionItem> items, OnTransactionClickListener listener) {
         this.items = items;
+        this.listener = listener;
     }
 
     @Override
@@ -53,6 +60,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     holder.itemView.getResources().getColor(R.color.colorBrightRed));
             h.ivIcon.setImageResource(transaction.getTransactionType().equals("income") ?
                     R.drawable.icon_arrow_circle_down : R.drawable.icon_arrow_circle_up);
+            //click to view detail of a transaction
+            h.itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onTransactionClick(transaction);
+            });
         }
     }
 

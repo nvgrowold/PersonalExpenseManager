@@ -1,11 +1,13 @@
 package com.example.personalexpensemanager;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -34,9 +36,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class AddTransactionActivity extends AppCompatActivity {
+public class TransactionAddNewActivity extends AppCompatActivity {
 
     Button btnSave;
+    ImageButton btnGoback;
     Spinner spinnerCategory, spinnerType;
     EditText editTextAmount, editTextDescription, editTextName,editTextDate;
 
@@ -44,7 +47,7 @@ public class AddTransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_transaction);
+        setContentView(R.layout.activity_transaction_add_new);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -58,6 +61,7 @@ public class AddTransactionActivity extends AppCompatActivity {
         editTextName = findViewById(R.id.edit_text_name);
         editTextDate = findViewById(R.id.edit_text_date);
         btnSave = findViewById(R.id.btn_save);
+        btnGoback = findViewById(R.id.imageButton_go_back);
 
         //set input fields' Hint behavior, when user click hint gone
         InputHintRemover.setHintBehavior(editTextName, "Transaction Name");
@@ -82,9 +86,9 @@ public class AddTransactionActivity extends AppCompatActivity {
                 String selectedType = parent.getItemAtPosition(position).toString();
 
                 if (selectedType.equalsIgnoreCase("Income")) {
-                    editTextAmount.setTextColor(ContextCompat.getColor(AddTransactionActivity.this, R.color.colorBrightGreen));
+                    editTextAmount.setTextColor(ContextCompat.getColor(TransactionAddNewActivity.this, R.color.colorBrightGreen));
                 } else if (selectedType.equalsIgnoreCase("Expense")) {
-                    editTextAmount.setTextColor(ContextCompat.getColor(AddTransactionActivity.this, R.color.colorRed));
+                    editTextAmount.setTextColor(ContextCompat.getColor(TransactionAddNewActivity.this, R.color.colorRed));
                 }
             }
 
@@ -180,9 +184,9 @@ public class AddTransactionActivity extends AppCompatActivity {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    AddTransactionActivity.this,
+                    TransactionAddNewActivity.this,
                     (view, selectedYear, selectedMonth, selectedDay) -> {
-                        // Format date as dd/MM/yyyy
+                        // Format date as dd/mm/yyyy
                         String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%d",
                                 selectedDay, selectedMonth + 1, selectedYear);
                         editTextDate.setText(formattedDate);
@@ -191,6 +195,13 @@ public class AddTransactionActivity extends AppCompatActivity {
             );
 
             datePickerDialog.show();
+        });
+
+        //set click Goback button event
+        btnGoback.setOnClickListener(v -> {
+            Intent intent = new Intent(TransactionAddNewActivity.this, DashboardActivity.class);
+            startActivity(intent);
+            finish();
         });
 
 

@@ -17,6 +17,7 @@ import com.example.personalexpensemanager.transaction.DateHeader;
 import com.example.personalexpensemanager.transaction.Transaction;
 import com.example.personalexpensemanager.transaction.TransactionAdapter;
 import com.example.personalexpensemanager.transaction.TransactionItem;
+import com.example.personalexpensemanager.utility.BottomNavHelper;
 import com.example.personalexpensemanager.utility.DateFormatConverter;
 import com.example.personalexpensemanager.utility.InputHintRemover;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionActivity extends AppCompatActivity {
+public class TransactionAllActivity extends AppCompatActivity {
 
     EditText etSearch;
     FirebaseUser user;
@@ -37,7 +38,7 @@ public class TransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_transaction);
+        setContentView(R.layout.activity_transaction_all);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -56,7 +57,7 @@ public class TransactionActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(TransactionActivity.this, LoginActivity.class); // Replace LoginActivity with your actual login class
+            Intent intent = new Intent(TransactionAllActivity.this, LoginActivity.class); // Replace LoginActivity with your actual login class
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // optional: clear back stack
             startActivity(intent);
             return;
@@ -69,7 +70,11 @@ public class TransactionActivity extends AppCompatActivity {
 //        items.add(new Transaction("uid", "Grocery", "New World", "desc", "expense", 51.83, null));
 //        items.add(new Transaction("uid", "Savings", "Rapid Save", "desc", "expense", 100.00, null));
 
-        TransactionAdapter adapter = new TransactionAdapter(items);
+        TransactionAdapter adapter = new TransactionAdapter(items, transaction -> {
+            Intent intent = new Intent(TransactionAllActivity.this, TransactionViewDetailActivity.class);
+            intent.putExtra("transactionId", transaction.getTid());
+            startActivity(intent);
+        });
         rv.setAdapter(adapter);
         //load user transaction data from firebase
         FirebaseFirestore.getInstance()
