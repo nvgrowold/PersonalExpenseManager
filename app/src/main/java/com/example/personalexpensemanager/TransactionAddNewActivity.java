@@ -1,11 +1,13 @@
 package com.example.personalexpensemanager;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -37,6 +39,7 @@ import java.util.Date;
 public class TransactionAddNewActivity extends AppCompatActivity {
 
     Button btnSave;
+    ImageButton btnGoback;
     Spinner spinnerCategory, spinnerType;
     EditText editTextAmount, editTextDescription, editTextName,editTextDate;
 
@@ -58,6 +61,7 @@ public class TransactionAddNewActivity extends AppCompatActivity {
         editTextName = findViewById(R.id.edit_text_name);
         editTextDate = findViewById(R.id.edit_text_date);
         btnSave = findViewById(R.id.btn_save);
+        btnGoback = findViewById(R.id.imageButton_go_back);
 
         //set input fields' Hint behavior, when user click hint gone
         InputHintRemover.setHintBehavior(editTextName, "Transaction Name");
@@ -182,7 +186,7 @@ public class TransactionAddNewActivity extends AppCompatActivity {
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     TransactionAddNewActivity.this,
                     (view, selectedYear, selectedMonth, selectedDay) -> {
-                        // Format date as dd/MM/yyyy
+                        // Format date as dd/mm/yyyy
                         String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%d",
                                 selectedDay, selectedMonth + 1, selectedYear);
                         editTextDate.setText(formattedDate);
@@ -191,6 +195,13 @@ public class TransactionAddNewActivity extends AppCompatActivity {
             );
 
             datePickerDialog.show();
+        });
+
+        //set click Goback button event
+        btnGoback.setOnClickListener(v -> {
+            Intent intent = new Intent(TransactionAddNewActivity.this, DashboardActivity.class);
+            startActivity(intent);
+            finish();
         });
 
 

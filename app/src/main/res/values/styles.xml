@@ -5,4 +5,21 @@
         <item name="cornerSize">50%</item> <!-- Makes it perfectly circular -->
     </style>
 
+    <!-- styles delete confirmation dialog box.xml -->
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/colorBlack</item>
+        <item name="android:textColor">@color/colorBrightBlue</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/DeleteDialogButton</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/CancelDialogButton</item>
+    </style>
+
+    <style name="DeleteDialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorBrightRed</item>
+    </style>
+
+    <style name="CancelDialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorBrightBlue</item>
+    </style>
+
+
 </resources>
