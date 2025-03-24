@@ -34,7 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class AddTransactionActivity extends AppCompatActivity {
+public class TransactionAddNewActivity extends AppCompatActivity {
 
     Button btnSave;
     Spinner spinnerCategory, spinnerType;
@@ -44,7 +44,7 @@ public class AddTransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_transaction);
+        setContentView(R.layout.activity_transaction_add_new);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -82,9 +82,9 @@ public class AddTransactionActivity extends AppCompatActivity {
                 String selectedType = parent.getItemAtPosition(position).toString();
 
                 if (selectedType.equalsIgnoreCase("Income")) {
-                    editTextAmount.setTextColor(ContextCompat.getColor(AddTransactionActivity.this, R.color.colorBrightGreen));
+                    editTextAmount.setTextColor(ContextCompat.getColor(TransactionAddNewActivity.this, R.color.colorBrightGreen));
                 } else if (selectedType.equalsIgnoreCase("Expense")) {
-                    editTextAmount.setTextColor(ContextCompat.getColor(AddTransactionActivity.this, R.color.colorRed));
+                    editTextAmount.setTextColor(ContextCompat.getColor(TransactionAddNewActivity.this, R.color.colorRed));
                 }
             }
 
@@ -180,7 +180,7 @@ public class AddTransactionActivity extends AppCompatActivity {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    AddTransactionActivity.this,
+                    TransactionAddNewActivity.this,
                     (view, selectedYear, selectedMonth, selectedDay) -> {
                         // Format date as dd/MM/yyyy
                         String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%d",

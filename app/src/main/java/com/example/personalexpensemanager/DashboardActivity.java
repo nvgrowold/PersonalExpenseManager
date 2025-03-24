@@ -23,7 +23,6 @@ import com.example.personalexpensemanager.transaction.Transaction;
 import com.example.personalexpensemanager.transaction.TransactionAdapter;
 import com.example.personalexpensemanager.transaction.TransactionItem;
 import com.example.personalexpensemanager.utility.DateFormatConverter;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -139,7 +138,11 @@ public class DashboardActivity extends AppCompatActivity {
 //        items.add(new DateHeader("Sat 22 Mar"));
 //        items.add(new Transaction("uid", "Grocery", "New World", "desc", "expense", 51.83, null));
 //        items.add(new Transaction("uid", "Savings", "Rapid Save", "desc", "expense", 100.00, null));
-        adapter = new TransactionAdapter(items);
+        adapter = new TransactionAdapter(items, transaction -> {
+            Intent intent = new Intent(DashboardActivity.this, TransactionViewDetailActivity.class);
+            intent.putExtra("transactionId", transaction.getTid());
+            startActivity(intent);
+        });
         rv.setAdapter(adapter);
 //        //load user transaction data from firebase
 //        FirebaseFirestore.getInstance()
@@ -174,7 +177,7 @@ public class DashboardActivity extends AppCompatActivity {
                 Animation bounce = AnimationUtils.loadAnimation(DashboardActivity.this, R.anim.click_bounce);
                 v.startAnimation(bounce);
 
-                Intent intent = new Intent(DashboardActivity.this, AddTransactionActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, TransactionAddNewActivity.class);
                 startActivity(intent);
             }
         });

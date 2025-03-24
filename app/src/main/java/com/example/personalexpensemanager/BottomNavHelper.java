@@ -22,8 +22,8 @@ public class BottomNavHelper {
 
         if (btnTransaction != null) {
             btnTransaction.setOnClickListener(v -> {
-                if (!(activity instanceof TransactionActivity)) {
-                    activity.startActivity(new Intent(activity, TransactionActivity.class));
+                if (!(activity instanceof TransactionAllActivity)) {
+                    activity.startActivity(new Intent(activity, TransactionAllActivity.class));
                 }
             });
         }
