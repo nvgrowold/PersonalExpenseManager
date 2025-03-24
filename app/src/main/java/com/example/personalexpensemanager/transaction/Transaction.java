@@ -1,6 +1,7 @@
 package com.example.personalexpensemanager.transaction;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.Exclude;
 
 public class Transaction  implements TransactionItem{
 
@@ -9,7 +10,7 @@ public class Transaction  implements TransactionItem{
     private String category;       // e.g. "Food", "Transport"
     private String name;           // e.g. "New World", "Subway"
     private String description;    // optional notes
-    private String type;           // "income" or "expense"
+    private String transactionType;           // "income" or "expense"
     private double amount;         // e.g. 25.00
     private Timestamp date;        // Date of transaction
 
@@ -18,12 +19,12 @@ public class Transaction  implements TransactionItem{
     }
 
     public Transaction(String firebaseUid, String category, String name, String description,
-                       String type, double amount, Timestamp date) {
+                       String transactionType, double amount, Timestamp date) {
         this.firebaseUid = firebaseUid;
         this.category = category;
         this.name = name;
         this.description = description;
-        this.type = type;
+        this.transactionType = transactionType;
         this.amount = amount;
         this.date = date;
     }
@@ -69,11 +70,11 @@ public class Transaction  implements TransactionItem{
     }
 
     public String getTransactionType() {
-        return type;
+        return transactionType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 
     public double getAmount() {
@@ -92,6 +93,7 @@ public class Transaction  implements TransactionItem{
         this.date = date;
     }
 
+    @Exclude //this type is for recycler view infterface, exlude it from saving to firestore
     @Override
     public int getType() {
         return TYPE_TRANSACTION;

@@ -5,5 +5,5 @@ public interface TransactionItem {
     int TYPE_HEADER = 0;
     int TYPE_TRANSACTION = 1;
 
-    int getType();
+    int getType(); // 👈 Used to tell adapter which layout to inflate
 }

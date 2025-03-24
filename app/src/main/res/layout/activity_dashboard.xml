@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.057" />
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <ImageView
         android:id="@+id/iv_avatar"
         android:layout_width="72dp"
         android:layout_height="70dp"
@@ -193,6 +193,7 @@
         android:layout_width="44dp"
         android:layout_height="41dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="@color/image_button_hover_tint"
         android:contentDescription="Add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -200,7 +201,8 @@
         app:layout_constraintStart_toEndOf="@+id/tv_recent_transactions"
         app:layout_constraintTop_toBottomOf="@+id/card_right_floating"
         app:layout_constraintVertical_bias="0.033"
-        app:srcCompat="@drawable/icon_add" />
+        app:srcCompat="@drawable/icon_add"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_transactions"

@@ -1,4 +1,4 @@
-package com.example.personalexpensemanager;
+package com.example.personalexpensemanager.utility;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.BaseAdapter;
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.personalexpensemanager.R;
 
 //a custom spinner adapter class for Android Spinner
 // to display user icons and roles in the dropdown menu
