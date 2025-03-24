@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -32,6 +33,9 @@ android {
 }
 
 dependencies {
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.firebase:firebase-firestore:24.10.2")
+    implementation("com.google.android.gms:play-services-auth:20.7.0") // ✅ Required for Google Sign-In
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -45,8 +49,18 @@ dependencies {
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
     //retrofit2
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     //load image/gif
-    implementation ("com.github.bumptech.glide:glide:4.12.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")}
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+    //BCrypt: password hashing
+    implementation("org.mindrot:jbcrypt:0.4")
+    //modern imageView, round shape
+    implementation ("com.google.android.material:material:1.12.0")
+
+
+}
+
+// ✅ Apply the Google Services plugin at the BOTTOM of the file
+apply(plugin = "com.google.gms.google-services")

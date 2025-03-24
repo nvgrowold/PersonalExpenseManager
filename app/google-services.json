@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "53990243837",
+    "project_id": "personalexpensemanager-861cb",
+    "storage_bucket": "personalexpensemanager-861cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53990243837:android:df0ba41b1049d14d5e6d94",
+        "android_client_info": {
+          "package_name": "com.example.personalexpensemanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdyWzJWZqS7L-Zee4HSkkr1CRhjbPuD4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">PersonalExpenseManager</string>
+
+
+    <!-- Dropdown Data for User Role -->
+    <string-array name="userRoles_array">
+        <item>User</item>
+        <item>Admin</item>
+        <item>Accountant</item>
+    </string-array>
+
+    <string-array name="transaction_types">
+        <item>Income</item>
+        <item>Expense</item>
+    </string-array>
+
+    <string-array name="transaction_categories">
+        <item>Groceries</item>
+        <item>Shopping</item>
+        <item>Transport</item>
+        <item>Utilities</item>
+        <item>Gift</item>
+        <item>Salary</item>
+        <item>Others</item>
+    </string-array>
+
 </resources>

@@ -1,0 +1,9 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_date_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:text="Sun 23 Mar"
+    android:textColor="@color/colorBrightGreen"
+    android:textSize="16sp"
+    android:textStyle="bold" />
