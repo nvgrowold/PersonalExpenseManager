@@ -1,8 +1,14 @@
-package com.example.personalexpensemanager;
+package com.example.personalexpensemanager.utility;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
+
+import com.example.personalexpensemanager.ChartActivity;
+import com.example.personalexpensemanager.DashboardActivity;
+import com.example.personalexpensemanager.R;
+import com.example.personalexpensemanager.TransactionAllActivity;
+import com.example.personalexpensemanager.UserProfileActivity;
 
 public class BottomNavHelper {
 
