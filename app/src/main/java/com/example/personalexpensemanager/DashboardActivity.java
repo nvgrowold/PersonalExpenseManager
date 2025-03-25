@@ -59,7 +59,7 @@ public class DashboardActivity extends AppCompatActivity {
         avatarView = findViewById(R.id.iv_avatar);
         user = FirebaseAuth.getInstance().getCurrentUser();
         imageButtonAdd = findViewById(R.id.imageButton_add);
-        tvBalance = findViewById(R.id.tv_balance_amount);
+        tvBalance = findViewById(R.id.tv_total_users_number);
         tvIncome = findViewById(R.id.tv_income_amount);
         tvExpense = findViewById(R.id.tv_expense_amount);
 
