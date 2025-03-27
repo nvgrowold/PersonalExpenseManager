@@ -38,10 +38,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TransactionItem.TYPE_HEADER) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_date_header, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_date_header, parent, false);
             return new HeaderViewHolder(view);
         } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_transaction, parent, false);
             return new TransactionViewHolder(view);
         }
     }

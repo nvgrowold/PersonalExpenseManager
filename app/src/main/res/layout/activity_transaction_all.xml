@@ -56,7 +56,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_search"
-        tools:listitem="@layout/item_transaction" />
+        tools:listitem="@layout/rv_item_transaction" />
 
     <!--    reuse cardview float bottom nav -->
     <include

@@ -36,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_users_list"
-        tools:listitem="@layout/item_transaction" />
+        tools:listitem="@layout/rv_item_transaction" />
 
     <TextView
         android:id="@+id/tv_users_list"

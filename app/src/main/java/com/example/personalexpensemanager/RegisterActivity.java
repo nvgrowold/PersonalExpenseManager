@@ -158,6 +158,8 @@ public class RegisterActivity extends AppCompatActivity {
                             user.put("password", hashedPassword);
                             user.put("role", role.toUpperCase());
                             user.put("balance", "0.00");
+                            user.put("enabled", true);
+
 
                             // Store user in firestore
                             /**db.collection("users") → Get the "users" collection in Firestore.

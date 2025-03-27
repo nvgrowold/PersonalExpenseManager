@@ -2,6 +2,7 @@ package com.example.personalexpensemanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,12 +12,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.List;
+
+import com.example.personalexpensemanager.rvUsersList.UserListItem;
+import com.example.personalexpensemanager.rvUsersList.UserListAdapter;
 
 public class DashboardAdminActivity extends AppCompatActivity {
 
@@ -43,6 +52,7 @@ public class DashboardAdminActivity extends AppCompatActivity {
         avatarView = findViewById(R.id.iv_avatar_admin);
         btnLogout = findViewById(R.id.btn_logout_admin);
         rv = findViewById(R.id.rv_users);
+        rv.setLayoutManager(new LinearLayoutManager(this));
 
         //must initialise before retrieving
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -95,6 +105,45 @@ public class DashboardAdminActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     tvUserNum.setText("0");
+                });
+
+
+        //Populate the RecyclerView with users list
+        FirebaseFirestore.getInstance().collection("users")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    Map<String, List<UserListItem.UserItem>> groupedByRole = new TreeMap<>();
+
+                    for (var doc : querySnapshot.getDocuments()) {
+                        String uid = doc.getString("firebaseUid");
+                        String username = doc.getString("username");
+                        String role = doc.getString("role");
+                        boolean enabled = doc.getBoolean("enabled") != null && doc.getBoolean("enabled");
+
+                        UserListItem.UserItem userItem = new UserListItem.UserItem(uid, username, role, enabled);
+                        groupedByRole.computeIfAbsent(role, k -> new java.util.ArrayList<>()).add(userItem);
+                    }
+
+                    List<UserListItem> finalList = new java.util.ArrayList<>();
+                    for (String role : groupedByRole.keySet()) {
+                        finalList.add(new UserListItem.RoleHeader(role));
+                        finalList.addAll(groupedByRole.get(role));
+                    }
+                    //debug: log final users list
+                    for (UserListItem item : finalList) {
+                        if (item instanceof UserListItem.RoleHeader) {
+                            Log.d("UserList", "Header: " + ((UserListItem.RoleHeader) item).role);
+                        }
+                    }
+
+                    UserListAdapter adapter = new UserListAdapter(finalList, (uid, enable) -> {
+                        FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(uid)
+                                .update("enabled", enable);
+                    });
+
+                    rv.setAdapter(adapter);
                 });
 
     }

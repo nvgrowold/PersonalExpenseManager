@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Username"
+        android:textColor="@color/colorBrightGreen"
+        android:textSize="16sp" />
+
+    <ToggleButton
+        android:id="@+id/tv_toggle_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="Disabled"
+        android:textOn="Enabled"
+        android:checked="true"
+        android:padding="8dp"
+        android:minWidth="64dp"
+        android:background="@null"
+        android:textColor="@color/colorBrightGreen"
+        android:textSize="16sp" />
+</LinearLayout>

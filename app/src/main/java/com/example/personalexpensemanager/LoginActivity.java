@@ -96,27 +96,34 @@ public class LoginActivity extends AppCompatActivity {
             private void loginUser(String emailInput, String passwordInput) {
                 auth.signInWithEmailAndPassword(emailInput, passwordInput)
                         .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 String userID = auth.getCurrentUser().getUid();
                                 db.collection("users").document(userID).get()
-                                                .addOnSuccessListener(documentSnapshot -> {
-                                                   if(documentSnapshot.exists()){
-                                                       String role = documentSnapshot.getString("role");
-                                                       if ("Admin".equalsIgnoreCase(role)){
-                                                           intent = new Intent(LoginActivity.this, DashboardAdminActivity.class);
-                                                       }
-                                                       else if ("Accountant".equalsIgnoreCase(role)){
-                                                           intent = new Intent(LoginActivity.this, DashboardAccountantActivity.class);
-                                                       } else{
-                                                           intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                                                       }
-                                                       Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
-                                                       startActivity(intent);
-                                                       finish();
-                                                   }else {
-                                                       Toast.makeText(LoginActivity.this, "User data not found!", Toast.LENGTH_LONG).show();
-                                                   }
-                                                })
+                                        .addOnSuccessListener(documentSnapshot -> {
+                                            if (documentSnapshot.exists()) {
+                                                Boolean enabled = documentSnapshot.getBoolean("enabled");
+                                                if (enabled == null || !enabled) {
+                                                    FirebaseAuth.getInstance().signOut();
+                                                    Toast.makeText(LoginActivity.this, "Your account has been disabled, please contact admin for support!.", Toast.LENGTH_LONG).show();
+                                                    return;
+                                                }
+
+                                                String role = documentSnapshot.getString("role");
+                                                if ("Admin".equalsIgnoreCase(role)) {
+                                                    intent = new Intent(LoginActivity.this, DashboardAdminActivity.class);
+                                                } else if ("Accountant".equalsIgnoreCase(role)) {
+                                                    intent = new Intent(LoginActivity.this, DashboardAccountantActivity.class);
+                                                } else {
+                                                    intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                                                }
+
+                                                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                                                startActivity(intent);
+                                                finish();
+                                            } else {
+                                                Toast.makeText(LoginActivity.this, "User data not found!", Toast.LENGTH_LONG).show();
+                                            }
+                                        })
                                         .addOnFailureListener(e -> {
                                             Log.e("Firestore", "Error fetching user role: " + e.getMessage(), e);
                                             Toast.makeText(LoginActivity.this, "Error fetching user data", Toast.LENGTH_LONG).show();
@@ -126,6 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         });
             }
+
         });
     }
 
