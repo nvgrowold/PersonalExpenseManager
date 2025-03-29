@@ -15,14 +15,31 @@
 
     <ToggleButton
         android:id="@+id/tv_toggle_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textOff="Disabled"
-        android:textOn="Enabled"
+        android:layout_width="108dp"
+        android:layout_height="36dp"
+        android:textOff="DISABLED"
+        android:textOn="ENABLED"
         android:checked="true"
         android:padding="8dp"
         android:minWidth="64dp"
-        android:background="@null"
-        android:textColor="@color/colorBrightGreen"
-        android:textSize="16sp" />
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:background="@drawable/button_hover"
+        android:textColor="@color/colorLessBrightGreen"
+        android:textSize="16sp"
+        />
+
+    <Button
+        android:id="@+id/btn_fill_ir_form"
+        android:layout_width="118dp"
+        android:layout_height="36dp"
+        android:text="Fill IR3/IR4"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:background="@drawable/button_hover"
+        android:textColor="@color/colorLessBrightGreen"
+        android:visibility="gone"
+        />
+
 </LinearLayout>

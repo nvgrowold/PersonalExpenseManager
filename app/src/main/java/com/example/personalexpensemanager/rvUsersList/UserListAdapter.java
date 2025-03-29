@@ -1,8 +1,11 @@
 package com.example.personalexpensemanager.rvUsersList;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -10,6 +13,7 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.personalexpensemanager.FillIRFormActivity;
 import com.example.personalexpensemanager.R;
 
 import java.util.List;
@@ -21,14 +25,16 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<UserListItem> itemList;
     private OnToggleStatusListener listener;
+    private boolean isAccountantView;
 
     public interface OnToggleStatusListener {
         void onStatusToggled(String uid, boolean enable);
     }
 
-    public UserListAdapter(List<UserListItem> itemList, OnToggleStatusListener listener) {
+    public UserListAdapter(List<UserListItem> itemList, OnToggleStatusListener listener, boolean isAccountantView) {
         this.itemList = itemList;
         this.listener = listener;
+        this.isAccountantView = isAccountantView;
     }
 
     @Override
@@ -54,7 +60,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (holder instanceof RoleHeaderViewHolder) {
             ((RoleHeaderViewHolder) holder).bind((UserListItem.RoleHeader) itemList.get(position));
         } else if (holder instanceof UserViewHolder) {
-            ((UserViewHolder) holder).bind((UserListItem.UserItem) itemList.get(position), listener);
+            ((UserViewHolder) holder).bind((UserListItem.UserItem) itemList.get(position), listener, isAccountantView);
         }
     }
 
@@ -79,29 +85,53 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView tvUsername;
         ToggleButton toggleButton;
+        Button btnFillIrForm;
 
         public UserViewHolder(View itemView) {
             super(itemView);
             tvUsername = itemView.findViewById(R.id.tv_username);
             toggleButton = itemView.findViewById(R.id.tv_toggle_status);
+            btnFillIrForm = itemView.findViewById(R.id.btn_fill_ir_form);
         }
 
-        public void bind(UserListItem.UserItem user, OnToggleStatusListener listener) {
+        public void bind(UserListItem.UserItem user, OnToggleStatusListener listener, boolean isAccountantView) {
             tvUsername.setText(user.username);
-            toggleButton.setChecked(user.enabled);
-            toggleButton.setText(user.enabled ? "Enabled" : "Disabled");
 
-            toggleButton.setOnClickListener(v -> {
-                boolean newState = toggleButton.isChecked();
-                toggleButton.setText(newState ? "Enabled" : "Disabled");
+            //hide enable/disable button on accountantDashboard page
+            if (isAccountantView){
+                toggleButton.setVisibility(View.GONE);
+            } else {
+                // Admin: show and handle toggle button
+                toggleButton.setVisibility(View.VISIBLE);
+                toggleButton.setChecked(user.enabled);
+                toggleButton.setText(user.enabled ? "Enabled" : "Disabled");
 
-                // ✅ Show toast message with username and new state
-                String message = user.username + " has been " + (newState ? "enabled" : "disabled");
-                Toast.makeText(itemView.getContext(), message, Toast.LENGTH_SHORT).show();
+                //set button behavior
+                toggleButton.setOnClickListener(v -> {
+                    boolean newState = toggleButton.isChecked();
+                    toggleButton.setText(newState ? "Enabled" : "Disabled");
 
-                // Notify listener to update Firestore
-                listener.onStatusToggled(user.uid, newState);
-            });
+                    // Show toast message with username and new state
+                    String message = user.username + " has been " + (newState ? "enabled" : "disabled");
+                    Toast.makeText(itemView.getContext(), message, Toast.LENGTH_SHORT).show();
+
+                    // Notify listener to update Firestore
+                    listener.onStatusToggled(user.uid, newState);
+                });
+            }
+
+            // Show or hide IR Form button based on role
+            if (isAccountantView) {
+                btnFillIrForm.setVisibility(View.VISIBLE);
+                btnFillIrForm.setOnClickListener(v -> {
+                    Context context = itemView.getContext();
+                    Intent intent = new Intent(context, FillIRFormActivity.class);
+                    intent.putExtra("userId", user.uid);
+                    context.startActivity(intent);
+                });
+            } else {
+                btnFillIrForm.setVisibility(View.GONE);
+            }
         }
     }
 

@@ -71,18 +71,18 @@ public class DashboardAdminActivity extends AppCompatActivity {
                             if (user.getPhotoUrl() != null) {
                                 Glide.with(this)
                                         .load(user.getPhotoUrl())
-                                        .placeholder(R.drawable.icon_person_login) // fallback image
+                                        .placeholder(R.drawable.icon_admin) // fallback image
                                         .circleCrop()
                                         .into(avatarView);
                             } else {
                                 // fallback in case no photo
-                                avatarView.setImageResource(R.drawable.icon_person_login);
+                                avatarView.setImageResource(R.drawable.icon_admin);
                             }
                         }
                     })
                     .addOnFailureListener(e -> {
                         tvHelloAdmin.setText("Hello, User");
-                        avatarView.setImageResource(R.drawable.icon_person_login);
+                        avatarView.setImageResource(R.drawable.icon_admin);
                     });
             }
 
@@ -141,7 +141,7 @@ public class DashboardAdminActivity extends AppCompatActivity {
                                 .collection("users")
                                 .document(uid)
                                 .update("enabled", enable);
-                    });
+                    }, false); //false flag because this is the admin dashboard
 
                     rv.setAdapter(adapter);
                 });
