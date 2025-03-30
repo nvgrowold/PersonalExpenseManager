@@ -38,8 +38,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
         tvUsername = findViewById(R.id.tv_username);
         ivAvatar = findViewById(R.id.iv_avatar2);
-        btnEditProfile = findViewById(R.id.btn_edit_profile);
-        btnSettings = findViewById(R.id.btn_settings);
+        btnEditProfile = findViewById(R.id.btn_request_service);
+        btnSettings = findViewById(R.id.btn_download_filled_IR_form);
         btnLogout = findViewById(R.id.btn_logout);
 
         user = FirebaseAuth.getInstance().getCurrentUser();

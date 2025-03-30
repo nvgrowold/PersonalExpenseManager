@@ -1,6 +1,8 @@
 package com.example.personalexpensemanager;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,6 +19,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.element.Paragraph;
@@ -119,10 +122,13 @@ public class FillIRFormActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         //set username
-        db.collection("users").document(userId).get().addOnSuccessListener(doc -> {
-            if (doc.exists()) {
-                tvUsername.setText(doc.getString("username"));
-            }
+        db.collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        tvUsername.setText(doc.getString("username"));
+                    }
         });
 
         // Get tax year range from spinner string
@@ -148,14 +154,20 @@ public class FillIRFormActivity extends AppCompatActivity {
                 .whereLessThanOrEqualTo("date", end.getTime())
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
+                    if (querySnapshot.isEmpty()) {
+                        Toast.makeText(this, "No transactions found for selected year", Toast.LENGTH_SHORT).show();
+                    }
+
                     for (var doc : querySnapshot) {
                         String type = doc.getString("transactionType"); // Note: you renamed 'type' to 'transactionType'
-                        double amount = doc.getDouble("amount");
+                        Double amount = doc.getDouble("amount");
 
-                        if ("Income".equalsIgnoreCase(type)) {
-                            incomeSum += amount;
-                        } else if ("Expense".equalsIgnoreCase(type)) {
-                            expenseSum += amount;
+                        if (amount != null){
+                            if ("Income".equalsIgnoreCase(type)) {
+                                incomeSum += amount;
+                            } else if ("Expense".equalsIgnoreCase(type)) {
+                                expenseSum += amount;
+                            }
                         }
                     }
                     updateCalculatedFields();
@@ -173,12 +185,39 @@ public class FillIRFormActivity extends AppCompatActivity {
     }
 
     private void submitIRForm() {
-        double dividends = parseDouble(etDividends.getText().toString());
-        double overseasIncome = parseDouble(etOverseasIncome.getText().toString());
-        double donations = parseDouble(etDonations.getText().toString());
+        //form validation
+        String dividendsStr = etDividends.getText().toString().trim();
+        String overseasStr = etOverseasIncome.getText().toString().trim();
+        String donationsStr = etDonations.getText().toString().trim();
 
+        if (dividendsStr.isEmpty() || overseasStr.isEmpty() || donationsStr.isEmpty()) {
+            Toast.makeText(this, "Please fill in all fields before submitting.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        double dividends = parseDouble(dividendsStr);
+        double overseasIncome = parseDouble(overseasStr);
+        double donations = parseDouble(donationsStr);
+
+        //spinner financial years
         String taxYear = spinnerTaxYear.getSelectedItem().toString();
+        // Check If Form for Selected Year Already Exists, avoids overwriting previously submitted forms silently.
+        String formId = "form_" + taxYear.replace("/", "_");
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .collection("irForms")
+                .document(formId)
+                .get()
+                .addOnSuccessListener(docSnapshot -> {
+                    if (docSnapshot.exists()) {
+                        Toast.makeText(this, "You have already submitted a form for this tax year.", Toast.LENGTH_LONG).show();
+                    } else {
+                        saveIRForm(taxYear, dividends, overseasIncome, donations);
+                    }
+                });
+    }
 
+    private void saveIRForm(String taxYear, double dividends, double overseasIncome, double donations) {
         Map<String, Object> form = new HashMap<>();
         form.put("income", incomeSum);
         form.put("expenses", expenseSum);
@@ -195,7 +234,13 @@ public class FillIRFormActivity extends AppCompatActivity {
                 .document(userId)
                 .collection("irForms")
                 .document("form_" + taxYear.replace("/", "_"))
-                .set(form);
+                .set(form)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Form saved successfully!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to save form: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     private double parseDouble(String s) {
@@ -221,22 +266,67 @@ public class FillIRFormActivity extends AppCompatActivity {
 
             document.add(new Paragraph("\nTax Year: " + taxYear));
             document.add(new Paragraph("Username: " + tvUsername.getText()));
-            document.add(new Paragraph("Total Income: $" + incomeSum));
-            document.add(new Paragraph("Total Expenses: $" + expenseSum));
-            document.add(new Paragraph("Net Income: $" + (incomeSum - expenseSum)));
-            document.add(new Paragraph("Tax Payable: $" + ((incomeSum - expenseSum) * taxRate)));
+            document.add(new Paragraph("Total Income: " + formatCurrency(incomeSum)));
+            document.add(new Paragraph("Total Expenses: " + formatCurrency(Math.abs(expenseSum))));
+            document.add(new Paragraph("Net Income: " + formatCurrency(incomeSum - expenseSum)));
+            document.add(new Paragraph("Tax Payable: " + formatCurrency((incomeSum - expenseSum) * taxRate)));
 
-            document.add(new Paragraph("Dividends: $" + etDividends.getText()));
-            document.add(new Paragraph("Overseas Income: $" + etOverseasIncome.getText()));
-            document.add(new Paragraph("Donations: $" + etDonations.getText()));
+            document.add(new Paragraph("Dividends: " + formatCurrency(parseDouble(etDividends.getText().toString()))));
+            document.add(new Paragraph("Overseas Income: " + formatCurrency(parseDouble(etOverseasIncome.getText().toString()))));
+            document.add(new Paragraph("Donations: " + formatCurrency(parseDouble(etDonations.getText().toString()))));
 
             document.add(new Paragraph("\nPrepared by Accountant on: " + new Date().toString()));
 
             document.close();
+            uploadPdfToFirebase(path, taxYear); // Upload after generating
             Toast.makeText(this, "PDF saved to: " + path.getAbsolutePath(), Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(this, "Failed to create PDF: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+        Log.d("PDF Upload", "Checking file: " + path.exists() + " Path: " + path.getAbsolutePath());
+    }
+
+    //save pdf file to firebase storage
+    private void uploadPdfToFirebase(File file, String taxYear) {
+        if (!file.exists()) {
+            Toast.makeText(this, "PDF file does not exist for upload!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Uri fileUri = Uri.fromFile(file);
+        String storagePath = "irForms/" + userId + "/IR3_Form_" + taxYear.replace("/", "_") + ".pdf";
+
+        FirebaseStorage.getInstance().getReference()
+                .child(storagePath)
+                .putFile(fileUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(this, "PDF uploaded to cloud!", Toast.LENGTH_SHORT).show();
+
+                    // Optional: Save download URL to Firestore
+                    taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                        FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(userId)
+                                .collection("irForms")
+                                .document("form_" + taxYear.replace("/", "_"))
+                                .update("pdfUrl", uri.toString());
+                    });
+
+                    //Delete the service request after filling form
+                    FirebaseFirestore.getInstance()
+                            .collection("requests")
+                            .document(userId)
+                            .delete(); // ✅ Mark as completed
+
+
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to upload PDF: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+    private String formatCurrency(double value) {
+        return String.format("$%.2f", value);
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.personalexpensemanager.rvUsersList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.personalexpensemanager.FillIRFormActivity;
@@ -120,19 +122,58 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 });
             }
 
-            // Show or hide IR Form button based on role
+            // Show or hide IR Form button based on if accountant service request exists
             if (isAccountantView) {
-                btnFillIrForm.setVisibility(View.VISIBLE);
-                btnFillIrForm.setOnClickListener(v -> {
-                    Context context = itemView.getContext();
-                    Intent intent = new Intent(context, FillIRFormActivity.class);
-                    intent.putExtra("userId", user.uid);
-                    context.startActivity(intent);
-                });
+                btnFillIrForm.setVisibility(View.GONE); // Default hidden
+
+                // Check if user has requested IR form
+                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection("requests")
+                        .document(user.uid)
+                        .get()
+                        .addOnSuccessListener(requestDoc -> {
+                            if (requestDoc.exists()) {
+                                // Request exists, now check if the IR form PDF is uploaded
+                                String currentTaxYear = getCurrentTaxYear();
+                                String formDocId = "form_" + currentTaxYear.replace("/", "_");
+
+                                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                        .collection("users")
+                                        .document(user.uid)
+                                        .collection("irForms")
+                                        .document(formDocId)
+                                        .get()
+                                        .addOnSuccessListener(formDoc -> {
+                                            btnFillIrForm.setVisibility(View.VISIBLE);
+
+                                            if (formDoc.exists() && formDoc.contains("pdfUrl")) {
+                                                Context context = itemView.getContext();
+                                                btnFillIrForm.setText("\u2713"); // Unicode checkmark ✓
+                                                btnFillIrForm.setTextSize(18);
+                                                btnFillIrForm.setBackgroundColor(ContextCompat.getColor(context, R.color.colorBrightGreen));
+                                                btnFillIrForm.setTextColor(Color.WHITE);
+
+                                                //btnFillIrForm.setEnabled(false); // Optional
+                                            } else {
+                                                btnFillIrForm.setText("Fill IR Form");
+                                                btnFillIrForm.setEnabled(true);
+                                                btnFillIrForm.setOnClickListener(v -> {
+                                                    Context context = itemView.getContext();
+                                                    Intent intent = new Intent(context, FillIRFormActivity.class);
+                                                    intent.putExtra("userId", user.uid);
+                                                    context.startActivity(intent);
+                                                });
+                                            }
+                                        });
+                            }
+                        });
             } else {
                 btnFillIrForm.setVisibility(View.GONE);
             }
         }
+        private String getCurrentTaxYear() {
+            int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+            return (currentYear - 1) + "/" + currentYear;
+        }
     }
-
 }
