@@ -44,7 +44,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:contentDescription="Chart"
-            android:src="@drawable/icon_bar_chart" />
+            android:src="@drawable/icon_ir_service" />
 
         <ImageButton
             android:id="@+id/btn_user"

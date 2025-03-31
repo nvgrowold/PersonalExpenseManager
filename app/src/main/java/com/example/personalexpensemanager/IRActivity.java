@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,14 +15,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.personalexpensemanager.utility.BottomNavHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class ChartActivity extends AppCompatActivity {
+public class IRActivity extends AppCompatActivity {
 
 
     private Button btnRequestService, btnDownloadIRForm;
     private TextView tvUsername;
+    ImageView ivAvatar;
     private String currentUserId;
     private String latestFormId = null; // dynamically loaded
 
@@ -29,7 +32,7 @@ public class ChartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_chart);
+        setContentView(R.layout.activity_ir);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -39,12 +42,17 @@ public class ChartActivity extends AppCompatActivity {
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         tvUsername = findViewById(R.id.tv_username);
+        ivAvatar = findViewById(R.id.iv_avatar);
         btnRequestService = findViewById(R.id.btn_request_service);
         btnDownloadIRForm = findViewById(R.id.btn_download_filled_IR_form);
         btnDownloadIRForm.setVisibility(View.GONE); // default hide
 
         loadUserName();
         checkIfPdfExists();
+        ivAvatar.setImageResource(R.drawable.icon_ir_service);
+
+        //call helper class to set the bottom navi bar
+        BottomNavHelper.setupBottomNav(this);
 
         //send user accountant service request to firestore
         btnRequestService.setOnClickListener(v -> {
@@ -55,10 +63,10 @@ public class ChartActivity extends AppCompatActivity {
                         put("requestedAt", new java.util.Date());
                     }})
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(ChartActivity.this, "Request submitted to accountant.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(IRActivity.this, "Request submitted to accountant.", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(ChartActivity.this, "Failed to send request: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(IRActivity.this, "Failed to send request: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     });
         });
 

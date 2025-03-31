@@ -73,5 +73,6 @@ dependencies {
 
 }
 
-// ✅ Apply the Google Services plugin at the BOTTOM of the file
+// Apply the Google Services plugin at the BOTTOM of the file
 apply(plugin = "com.google.gms.google-services")
+

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
-import com.example.personalexpensemanager.ChartActivity;
+import com.example.personalexpensemanager.IRActivity;
 import com.example.personalexpensemanager.DashboardActivity;
 import com.example.personalexpensemanager.R;
 import com.example.personalexpensemanager.TransactionAllActivity;
@@ -36,8 +36,8 @@ public class BottomNavHelper {
 
         if (btnChart != null) {
             btnChart.setOnClickListener(v -> {
-                if (!(activity instanceof ChartActivity)) {
-                    activity.startActivity(new Intent(activity, ChartActivity.class));
+                if (!(activity instanceof IRActivity)) {
+                    activity.startActivity(new Intent(activity, IRActivity.class));
                 }
             });
         }

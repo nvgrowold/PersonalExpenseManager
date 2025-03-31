@@ -28,7 +28,7 @@
             android:name=".UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ChartActivity"
+            android:name=".IRActivity"
             android:exported="false" />
         <activity
             android:name=".TransactionAllActivity"
