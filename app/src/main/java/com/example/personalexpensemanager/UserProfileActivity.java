@@ -17,6 +17,8 @@ import com.example.personalexpensemanager.utility.BottomNavHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -24,6 +26,7 @@ public class UserProfileActivity extends AppCompatActivity {
     ImageView ivAvatar;
     Button btnEditProfile, btnSettings, btnLogout;
     FirebaseUser user;
+    GoogleSignInClient googleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,13 +81,26 @@ public class UserProfileActivity extends AppCompatActivity {
             ivAvatar.setImageResource(R.drawable.icon_person_login);
         }
 
+        //Initialize the client
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(this, gso);
+
+
         //set logout button click event
+        //also log out google sign in
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(UserProfileActivity.this, HomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+                Intent intent = new Intent(UserProfileActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
         });
     }
 }

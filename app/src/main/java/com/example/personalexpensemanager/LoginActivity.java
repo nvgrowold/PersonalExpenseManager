@@ -170,6 +170,27 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         });
+
+        //forgot password
+        tv_forgotPassword.setOnClickListener(v -> {
+            String email = etEmail.getText().toString().trim().toLowerCase();
+
+            if (email.isEmpty()) {
+                etEmail.setError("Enter your email first");
+                etEmail.requestFocus();
+                return;
+            }
+
+            auth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Password reset email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Failed to send reset email: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        });
+
     }
 
     //Handle Google Sign-In Result
