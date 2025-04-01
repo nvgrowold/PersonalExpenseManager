@@ -18,6 +18,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.personalexpensemanager.db.TransactionEntity;
+import com.example.personalexpensemanager.db.TransactionRepository;
 import com.example.personalexpensemanager.utility.InputHintRemover;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +44,7 @@ public class TransactionAddNewActivity extends AppCompatActivity {
     ImageButton btnGoback;
     Spinner spinnerCategory, spinnerType;
     EditText editTextAmount, editTextDescription, editTextName,editTextDate;
+    TransactionRepository transactionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,8 @@ public class TransactionAddNewActivity extends AppCompatActivity {
         InputHintRemover.setHintBehavior(editTextAmount, "Amount");
         InputHintRemover.setHintBehavior(editTextDescription, "Description...");
 
+        //offline roomdb
+        transactionRepository = new TransactionRepository(this);
 
         //set up spinner adapter
         String[] categories = getResources().getStringArray(R.array.transaction_categories);
@@ -98,104 +103,120 @@ public class TransactionAddNewActivity extends AppCompatActivity {
             }
         });
 
-        // Save button event
         btnSave.setOnClickListener(v -> {
-            String name = editTextName.getText().toString().trim();
-            String category = spinnerCategory.getSelectedItem().toString();
-            String transactionType = spinnerType.getSelectedItem().toString();
-            String amountStr = editTextAmount.getText().toString().trim();
-            String dateStr = editTextDate.getText().toString().trim();
-            String description = editTextDescription.getText().toString().trim();
+                    String name = editTextName.getText().toString().trim();
+                    String category = spinnerCategory.getSelectedItem().toString();
+                    String transactionType = spinnerType.getSelectedItem().toString();
+                    String amountStr = editTextAmount.getText().toString().trim();
+                    String dateStr = editTextDate.getText().toString().trim();
+                    String description = editTextDescription.getText().toString().trim();
 
-            if (name.isEmpty() || category.isEmpty() || transactionType.isEmpty() || amountStr.isEmpty() || dateStr.isEmpty()) {
-                Toast.makeText(this, "All fields must be filled!", Toast.LENGTH_SHORT).show();
-                return;
-            }
+                    if (name.isEmpty() || category.isEmpty() || transactionType.isEmpty() || amountStr.isEmpty() || dateStr.isEmpty()) {
+                        Toast.makeText(this, "All fields must be filled!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (currentUser == null) {
-                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
-                return;
-            }
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (currentUser == null) {
+                        Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-            // Parse and format amount
-            double amount;
-            try {
-                amount = Double.parseDouble(amountStr);
-                if (transactionType.equalsIgnoreCase("Expense") && amount > 0) {
-                    amount = -amount;
-                }
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            // Parse user input transaction date (dateStr) to Timestamp
-            Timestamp timestamp;
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                Date parsedDate = sdf.parse(dateStr);
-                timestamp = new Timestamp(parsedDate);
-            } catch (ParseException e) {
-                Toast.makeText(this, "Invalid date format", Toast.LENGTH_SHORT).show();
-                return;
-            }
+                    double amount;
+                    try {
+                        amount = Double.parseDouble(amountStr);
+                        if (transactionType.equalsIgnoreCase("Expense") && amount > 0) {
+                            amount = -amount;
+                        }
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-            // Create transaction object
-            Transaction transaction = new Transaction(
-                    currentUser.getUid(),
-                    category,
-                    name,
-                    description,
-                    transactionType.toLowerCase(), // "income" or "expense"
-                    amount,
-//                    Timestamp.now() // Replace with custom parsed date if needed
-                    timestamp
-            );
+                    Timestamp timestamp;
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                        Date parsedDate = sdf.parse(dateStr);
+                        timestamp = new Timestamp(parsedDate);
+                    } catch (ParseException e) {
+                        Toast.makeText(this, "Invalid date format", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-            // Save to Firestore
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            String userId = currentUser.getUid();
+                    Transaction transaction = new Transaction(
+                            currentUser.getUid(),
+                            category,
+                            name,
+                            description,
+                            transactionType.toLowerCase(),
+                            amount,
+                            timestamp
+                    );
 
-            db.collection("users")
-                    .document(userId)
-                    .collection("transactions")
-                    .add(transaction)
-                    .addOnSuccessListener(documentReference -> {
-                        // Set transaction ID (tid) field in the same doc
-                        documentReference.update("tid", documentReference.getId());
+                    //Save to Firestore or fallback to RoomDB
+                    // Save to Firestore or fallback to RoomDB
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    String userId = currentUser.getUid();
 
-                        Toast.makeText(this, "Transaction saved!", Toast.LENGTH_SHORT).show();
-                        finish(); // Return to previous screen
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Failed to save transaction", Toast.LENGTH_SHORT).show();
+                    // Try saving to Firestore first
+                    db.collection("users")
+                            .document(userId)
+                            .collection("transactions")
+                            .add(transaction)
+                            .addOnSuccessListener(documentReference -> {
+                                documentReference.update("tid", documentReference.getId());
+                                Toast.makeText(this, "Transaction saved online!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                // Fallback to RoomDB
+                                String fakeTid = String.valueOf(System.currentTimeMillis()); // temporary ID
+                                transaction.setTid(fakeTid);
+
+                                TransactionEntity localTx = new TransactionEntity(
+                                        fakeTid,
+                                        transaction.getFirebaseUid(),
+                                        transaction.getCategory(),
+                                        transaction.getName(),
+                                        transaction.getDescription(),
+                                        transaction.getTransactionType(),
+                                        transaction.getAmount(),
+                                        transaction.getDate()
+                                );
+
+                                new Thread(() -> {
+                                    transactionRepository.insertOrUpdate(localTx);
+
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(TransactionAddNewActivity.this, "Saved offline (will sync when online)", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(TransactionAddNewActivity.this, DashboardActivity.class);
+                                        startActivity(intent);
+                                        new android.os.Handler().postDelayed(() -> finish(), 800);
+                                    });
+                                }).start();
+                            });
+        });
+
+                    //set up click to pick a date
+                    editTextDate.setOnClickListener(v -> {
+                        final Calendar calendar = Calendar.getInstance();
+                        int year = calendar.get(Calendar.YEAR);
+                        int month = calendar.get(Calendar.MONTH);
+                        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                TransactionAddNewActivity.this,
+                                (view, selectedYear, selectedMonth, selectedDay) -> {
+                                    // Format date as dd/mm/yyyy
+                                    String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%d",
+                                            selectedDay, selectedMonth + 1, selectedYear);
+                                    editTextDate.setText(formattedDate);
+                                },
+                                year, month, day
+                        );
+
+                        datePickerDialog.show();
                     });
-
-
-
-        });
-
-
-        //set up click to pick a date
-        editTextDate.setOnClickListener(v -> {
-            final Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    TransactionAddNewActivity.this,
-                    (view, selectedYear, selectedMonth, selectedDay) -> {
-                        // Format date as dd/mm/yyyy
-                        String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%d",
-                                selectedDay, selectedMonth + 1, selectedYear);
-                        editTextDate.setText(formattedDate);
-                    },
-                    year, month, day
-            );
-
-            datePickerDialog.show();
-        });
 
         //set click Goback button event
         btnGoback.setOnClickListener(v -> {

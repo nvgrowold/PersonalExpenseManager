@@ -39,5 +39,10 @@ public interface UserDAO { // DAO -- Data Access Object
     @Query("DELETE FROM users")
     void deleteAllUsers();
 
+    @Query("SELECT * FROM users ORDER BY username ASC")
+    List<UserEntity> getAllUsers();
+
+    @Query("SELECT * FROM users WHERE firebaseUid = :uid")
+    UserEntity getUserByUid(String uid);
 
 }

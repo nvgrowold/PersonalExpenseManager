@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.personalexpensemanager.R;
@@ -56,8 +57,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             h.tvName.setText(transaction.getName());
             h.tvAmount.setText(String.format((transaction.getTransactionType().equals("income") ? "+$%.2f" : "-$%.2f"), transaction.getAmount()));
             h.tvAmount.setTextColor(transaction.getTransactionType().equals("income") ?
-                    holder.itemView.getResources().getColor(R.color.colorBrightBlue) :
-                    holder.itemView.getResources().getColor(R.color.colorBrightRed));
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.colorBrightBlue) :
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.colorBrightRed));
             h.ivIcon.setImageResource(transaction.getTransactionType().equals("income") ?
                     R.drawable.icon_arrow_circle_down : R.drawable.icon_arrow_circle_up);
             //click to view detail of a transaction

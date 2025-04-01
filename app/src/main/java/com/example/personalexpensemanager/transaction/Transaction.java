@@ -2,7 +2,9 @@ package com.example.personalexpensemanager.transaction;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
+@IgnoreExtraProperties //let firebase igore type field which is not used for mappying
 public class Transaction  implements TransactionItem{
 
     private String tid;             // Unique ID (optional - Firestore doc ID can be used)

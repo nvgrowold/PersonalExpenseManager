@@ -61,6 +61,7 @@ public class IRActivity extends AppCompatActivity {
                     .document(currentUserId)
                     .set(new java.util.HashMap<String, Object>() {{
                         put("requestedAt", new java.util.Date());
+                        put("status", "requested"); // ✅ Add status for later reactive the request again
                     }})
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(IRActivity.this, "Request submitted to accountant.", Toast.LENGTH_SHORT).show();

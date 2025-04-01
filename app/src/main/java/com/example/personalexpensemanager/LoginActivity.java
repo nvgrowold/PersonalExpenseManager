@@ -1,8 +1,11 @@
 package com.example.personalexpensemanager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -41,8 +46,9 @@ public class LoginActivity extends AppCompatActivity {
 
     //identify the result of the Google sign-in activity
     private GoogleSignInClient mGoogleSignInClient;
+    private ActivityResultLauncher<Intent> googleSignInLauncher;
 
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +66,32 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.et_Password);
         tv_forgotPassword = findViewById(R.id.text_view_forgot_password);
         tv_register = findViewById(R.id.text_view_register);
+
+        //view password icon click event
+        final boolean[] isVisible = {false};
+        etPassword.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2; // index 0=left, 1=top, 2=right, 3=bottom
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (etPassword.getRight() - etPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+
+                    if (isVisible[0]) {
+                        etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        etPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_security, 0, R.drawable.icon_eye_off_24, 0);
+                        isVisible[0] = false;
+                    } else {
+                        etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        etPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_security, 0, R.drawable.icon_eye, 0);
+                        isVisible[0] = true;
+                    }
+
+                    etPassword.setSelection(etPassword.getText().length());
+                    return true;
+                }
+            }
+
+            return false;
+        });
 
         //set input fields' Hint behavior, when user click hint gone
         InputHintRemover.setHintBehavior(etEmail, "Email");
@@ -90,10 +122,29 @@ public class LoginActivity extends AppCompatActivity {
         //create client -- initialise the google sign-in client
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         //set click listener, opens a pop-up to choose Google Account
+        googleSignInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                        try {
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+                            firebaseAuthWithGoogle(account.getIdToken());
+                        } catch (ApiException e) {
+                            Log.w("Google Sign-In", "signInResult:failed code=" + e.getStatusCode(), e);
+                            Toast.makeText(this, "Google sign-in failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Google Sign-In cancelled", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         btnGoogleLogin.setOnClickListener(v -> {
             Log.d("LoginActivity", "Google Sign-In button clicked");
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            startActivityForResult(signInIntent, RC_SIGN_IN);
+//            startActivityForResult(signInIntent, RC_SIGN_IN);   Replaced with deprecated method
+            googleSignInLauncher.launch(signInIntent); // ✅ Replaces deprecated method
         });
 
         //normal email + password login
@@ -133,6 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 String userID = auth.getCurrentUser().getUid();
+                                Log.d("LoginSuccess", "Logged in with UID = " + userID);
                                 db.collection("users").document(userID).get()
                                         .addOnSuccessListener(documentSnapshot -> {
                                             if (documentSnapshot.exists()) {
@@ -193,26 +245,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    //Handle Google Sign-In Result
-    //Android gives us the result of startActivityForResult
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //Try to get user’s Google account
-        //If successful, get the token → use it to sign in with Firebase.
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                Log.w("Google Sign-In", "signInResult:failed code=" + e.getStatusCode(), e);
-                Toast.makeText(this, "Google sign-in failed.", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     //Convert the Google ID token to Firebase credentials and sign in
     //Once signed in, get the user's UID.
     private void firebaseAuthWithGoogle(String idToken) {
@@ -244,6 +276,9 @@ public class LoginActivity extends AppCompatActivity {
                                         } else {
                                             intent = new Intent(LoginActivity.this, DashboardActivity.class);
                                         }
+
+                                        // log BEFORE starting Dashboard
+                                        Log.d("Redirect", "Redirecting to DashboardActivity");
                                         startActivity(intent);
                                         finish();
 

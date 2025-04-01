@@ -19,6 +19,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.personalexpensemanager.db.TransactionEntity;
+import com.example.personalexpensemanager.db.TransactionRepository;
 import com.example.personalexpensemanager.transaction.DateHeader;
 import com.example.personalexpensemanager.transaction.Transaction;
 import com.example.personalexpensemanager.transaction.TransactionAdapter;
@@ -49,6 +51,8 @@ public class TransactionAllActivity extends AppCompatActivity {
     List<Transaction> allTransactions = new ArrayList<>();
     List<TransactionItem> displayItems = new ArrayList<>();
     TransactionAdapter adapter;
+    //for RoomDB offline function
+    TransactionRepository transactionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +83,29 @@ public class TransactionAllActivity extends AppCompatActivity {
         if (user == null) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(TransactionAllActivity.this, LoginActivity.class); // Replace LoginActivity with your actual login class
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // optional: clear back stack
             startActivity(intent);
             return;
         }
 
-        //populate with transactions
-        List<TransactionItem> items = new ArrayList<>();
+        //for roomdb offline function
+        transactionRepository = new TransactionRepository(this);
+        transactionRepository.getAllTransactions(user.getUid()).observe(this, entityList -> {
+            allTransactions.clear();
+            for (TransactionEntity entity : entityList) {
+                Transaction tx = new Transaction();
+                tx.setTid(entity.getTid());
+                tx.setName(entity.getName());
+                tx.setAmount(entity.getAmount());
+                tx.setTransactionType(entity.getTransactionType());
+                tx.setCategory(entity.getCategory());
+                tx.setDate(entity.getDate());
+                tx.setDescription(entity.getDescription());
+                tx.setFirebaseUid(entity.getFirebaseUid());
+                allTransactions.add(tx);
+            }
+            filterTransactions();
+        });
+
         adapter = new TransactionAdapter(displayItems, transaction -> {
             Intent intent = new Intent(TransactionAllActivity.this, TransactionViewDetailActivity.class);
             intent.putExtra("transactionId", transaction.getTid());
@@ -93,22 +113,18 @@ public class TransactionAllActivity extends AppCompatActivity {
         });
         rv.setAdapter(adapter);
 
-        // Keyword search
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filterTransactions();
                 updateClearFilterVisibility();
-
             }
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // Date picker logic
         etStartDate.setOnClickListener(v -> showDatePickerDialog(etStartDate, true));
         etEndDate.setOnClickListener(v -> showDatePickerDialog(etEndDate, false));
 
-        //reset filter
         btnClearFilter.setOnClickListener(v -> {
             etSearch.setText("");
             etStartDate.setText("");
@@ -116,11 +132,10 @@ public class TransactionAllActivity extends AppCompatActivity {
             startDate = null;
             endDate = null;
             updateClearFilterVisibility();
-            filterTransactions(); // Reset everything
+            filterTransactions();
         });
 
-
-        //load user transaction data from firebase
+        // Keep this to update Room cache when online
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.getUid())
@@ -128,17 +143,20 @@ public class TransactionAllActivity extends AppCompatActivity {
                 .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    String lastDate = "";
-
-                    allTransactions.clear();
+                    List<TransactionEntity> roomData = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Transaction tx = doc.toObject(Transaction.class);
-                        tx.setTid(doc.getId()); // ensure ID is set
-                        allTransactions.add(tx);
+                        tx.setTid(doc.getId());
+                        TransactionEntity entity = new TransactionEntity(
+                                tx.getTid(), tx.getFirebaseUid(), tx.getCategory(),
+                                tx.getName(), tx.getDescription(), tx.getTransactionType(),
+                                tx.getAmount(), tx.getDate()
+                        );
+                        roomData.add(entity);
                     }
-
-                    filterTransactions(); // will populate displayItems based on filters
+                    transactionRepository.insertOrReplaceTransactions(roomData);
                 });
+
     }
 
     private void showDatePickerDialog(EditText editText, boolean isStart) {
