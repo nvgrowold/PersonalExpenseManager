@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -92,12 +93,13 @@ public class TransactionAllActivity extends AppCompatActivity {
         });
         rv.setAdapter(adapter);
 
-
         // Keyword search
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filterTransactions();
+                updateClearFilterVisibility();
+
             }
             @Override public void afterTextChanged(Editable s) {}
         });
@@ -113,6 +115,7 @@ public class TransactionAllActivity extends AppCompatActivity {
             etEndDate.setText("");
             startDate = null;
             endDate = null;
+            updateClearFilterVisibility();
             filterTransactions(); // Reset everything
         });
 
@@ -147,6 +150,7 @@ public class TransactionAllActivity extends AppCompatActivity {
             editText.setText(sdf.format(picked));
             if (isStart) startDate = new Timestamp(picked);
             else endDate = new Timestamp(picked);
+            updateClearFilterVisibility();
             filterTransactions();
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         dialog.show();
@@ -179,4 +183,17 @@ public class TransactionAllActivity extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
     }
+
+    private void updateClearFilterVisibility() {
+        boolean hasSearch = !etSearch.getText().toString().trim().isEmpty();
+        boolean hasStartDate = startDate != null;
+        boolean hasEndDate = endDate != null;
+
+        if (hasSearch || hasStartDate || hasEndDate) {
+            btnClearFilter.setVisibility(View.VISIBLE);
+        } else {
+            btnClearFilter.setVisibility(View.GONE);
+        }
+    }
+
 }
