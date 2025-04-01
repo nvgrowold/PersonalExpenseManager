@@ -16,6 +16,9 @@
         android:theme="@style/Theme.PersonalExpenseManager"
         tools:targetApi="31">
         <activity
+            android:name=".FillIRFormActivity"
+            android:exported="false" />
+        <activity
             android:name=".TransactionViewDetailActivity"
             android:exported="false" />
         <activity
@@ -25,7 +28,7 @@
             android:name=".UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ChartActivity"
+            android:name=".IRActivity"
             android:exported="false" />
         <activity
             android:name=".TransactionAllActivity"

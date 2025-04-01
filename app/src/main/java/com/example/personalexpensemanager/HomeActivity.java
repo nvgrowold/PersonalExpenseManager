@@ -15,6 +15,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +43,22 @@ public class HomeActivity extends AppCompatActivity {
         ivGif_Money = findViewById(R.id.IV_gif_money_flying);
         btnStart = findViewById(R.id.btn_get_started);
         auth = FirebaseAuth.getInstance();
+
+        // 🔒 Force logout from Firebase
+        FirebaseAuth.getInstance().signOut();
+
+        // 🔒 Force logout from Google
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        googleSignInClient.signOut().addOnCompleteListener(task -> {
+            // Optional: Show toast
+            // Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
+        });
+
 
         // ✅ Ensure Google Play Services is available
         checkGooglePlayServices();

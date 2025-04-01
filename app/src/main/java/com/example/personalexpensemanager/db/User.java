@@ -32,19 +32,22 @@ public class User {
 //                         Store role as String instead of Enum for Firestore compatibility
     @NotNull
     private String balance = "0.00"; //required, decimal(10,2), default(0,0)
+    @NotNull
+    private boolean enabled = true; // default to true (enabled)
 
     /**
      * Default constructor required for Firestore deserialization.
      */
     public User() {}
 
-    public User(String firebaseUid, @NotNull String username, @NotNull String email, @NotNull String password, @NotNull String role, @NotNull String balance) {
+    public User(String firebaseUid, @NotNull String username, @NotNull String email, @NotNull String password, @NotNull String role, @NotNull String balance, boolean enabled) {
         this.firebaseUid = firebaseUid;
         this.username = username;
         this.email = email;
         this.password = hashPassword(password); // Hash password before storing
         this.role = role;
         this.balance = balance;
+        this.enabled = enabled;
     }
 
     public String getFirebaseUid() {
@@ -93,5 +96,13 @@ public class User {
 
     public void setBalance(@NotNull String balance) {
         this.balance = balance;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

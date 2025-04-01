@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    tools:context=".FillIRFormActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="IR3 Form"
+            android:textColor="@color/colorBrightGreen"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_goneMarginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/spinner_tax_year"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/input_bg"
+            android:padding="12dp"
+            android:popupBackground="@drawable/spinner_item_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+        <TextView
+            android:id="@+id/tv_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Username:"
+            android:textColor="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/spinner_tax_year"
+            app:layout_constraintTop_toBottomOf="@id/spinner_tax_year" />
+
+        <TextView
+            android:id="@+id/tv_total_income"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Total Income: $0"
+            android:textColor="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tv_username"
+            app:layout_constraintTop_toBottomOf="@id/tv_username" />
+
+        <TextView
+            android:id="@+id/tv_total_expense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Total Expenses: $0"
+            android:textColor="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tv_total_income"
+            app:layout_constraintTop_toBottomOf="@id/tv_total_income" />
+
+        <TextView
+            android:id="@+id/tv_net_income"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Net Income: $0"
+            android:textColor="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tv_total_expense"
+            app:layout_constraintTop_toBottomOf="@id/tv_total_expense" />
+
+        <TextView
+            android:id="@+id/tv_tax_payable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Tax Payable: $0"
+            android:textColor="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tv_net_income"
+            app:layout_constraintTop_toBottomOf="@id/tv_net_income" />
+
+        <EditText
+            android:id="@+id/et_dividends"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/input_bg"
+            android:hint="Dividends Income"
+            android:inputType="numberDecimal"
+            android:paddingStart="8dp"
+            android:textColor="@color/colorBrightGreen"
+            android:textColorHint="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_tax_payable" />
+
+        <EditText
+            android:id="@+id/et_overseas_income"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/input_bg"
+            android:hint="Overseas Income"
+            android:inputType="numberDecimal"
+            android:paddingStart="8dp"
+            android:textColor="@color/colorBrightGreen"
+            android:textColorHint="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_dividends" />
+
+        <EditText
+            android:id="@+id/et_donations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/input_bg"
+            android:hint="Donations"
+            android:inputType="numberDecimal"
+            android:paddingStart="8dp"
+            android:textColor="@color/colorBrightGreen"
+            android:textColorHint="@color/colorBrightGreen"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_overseas_income" />
+
+        <Button
+            android:id="@+id/btn_submit_ir_form"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/button_hover"
+            android:text="SUBMIT"
+            android:textColor="@color/colorLessBrightGreen"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_donations" />
+
+        <Button
+            android:id="@+id/btn_export_pdf"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/button_hover"
+            android:text="EXPORT TO PDF"
+            android:textColor="@color/colorLessBrightGreen"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_submit_ir_form" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

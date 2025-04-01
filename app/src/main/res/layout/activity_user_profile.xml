@@ -9,7 +9,7 @@
     tools:context=".UserProfileActivity">
 
     <Button
-        android:id="@+id/btn_edit_profile"
+        android:id="@+id/btn_request_service"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -28,7 +28,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/btn_settings"
+        android:id="@+id/btn_download_filled_IR_form"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -43,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_edit_profile"
+        app:layout_constraintTop_toBottomOf="@+id/btn_request_service"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
@@ -62,7 +62,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_settings"
+        app:layout_constraintTop_toBottomOf="@+id/btn_download_filled_IR_form"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
@@ -91,13 +91,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_user_profile"
+        app:layout_constraintTop_toBottomOf="@+id/tv_accountant_service"
         app:layout_constraintVertical_bias="0.045"
         app:shapeAppearanceOverlay="@style/RoundedImageView"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/tv_user_profile"
+        android:id="@+id/tv_accountant_service"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Profile"

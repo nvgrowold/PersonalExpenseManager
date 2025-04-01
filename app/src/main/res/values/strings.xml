@@ -24,4 +24,8 @@
         <item>Others</item>
     </string-array>
 
+<!--    for sign in with google -->
+    <string name="default_web_client_id">53990243837-57r1ikp9smp24mo15df9ujlvedsjmu5t.apps.googleusercontent.com
+</string>
+
 </resources>
