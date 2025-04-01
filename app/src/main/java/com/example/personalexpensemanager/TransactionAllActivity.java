@@ -45,8 +45,8 @@ public class TransactionAllActivity extends AppCompatActivity {
             return insets;
         });
 
-        etSearch = findViewById(R.id.et_search);
-        InputHintRemover.setHintBehavior(etSearch, "Search...");
+//        etSearch = findViewById(R.id.et_search);
+//        InputHintRemover.setHintBehavior(etSearch, "Search...");
         //call helper class to set the bottom navi bar
         BottomNavHelper.setupBottomNav(this);
 

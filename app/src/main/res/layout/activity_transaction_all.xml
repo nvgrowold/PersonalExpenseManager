@@ -23,42 +23,92 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.022" />
 
-    <EditText
-        android:id="@+id/et_search"
+    <LinearLayout
+        android:id="@+id/filter_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:background="@drawable/input_bg"
-        android:drawableLeft="@drawable/icon_search"
-        android:drawablePadding="10dp"
-        android:hint="Search ..."
-        android:inputType="text"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:textColor="@color/colorBrightGreen"
-        android:textColorHint="@color/colorBrightGreen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_transactions" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_transactions"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingBottom="96dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/rv_transactions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_search"
-        tools:listitem="@layout/rv_item_transaction" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_transactions">
 
-    <!--    reuse cardview float bottom nav -->
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:hint="Search by key word..."
+            android:background="@drawable/input_bg"
+            android:drawableLeft="@drawable/icon_search"
+            android:drawablePadding="10dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/colorBrightGreen"
+            android:textColorHint="@color/colorBrightGreen"
+            />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_start_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_bg"
+                    android:clickable="true"
+                    android:drawableLeft="@drawable/icon_calendar"
+                    android:drawablePadding="10dp"
+                    android:focusable="false"
+                    android:hint="Start date"
+                    android:inputType="none"
+                    android:padding="10dp"
+                    android:textColor="@color/colorBrightGreen"
+                    android:textColorHint="@color/colorBrightGreen" />
+
+                <EditText
+                    android:id="@+id/et_end_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_bg"
+                    android:clickable="true"
+                    android:drawableLeft="@drawable/icon_calendar"
+                    android:drawablePadding="10dp"
+                    android:focusable="false"
+                    android:hint="End date"
+                    android:inputType="none"
+                    android:padding="10dp"
+                    android:textColor="@color/colorBrightGreen"
+                    android:textColorHint="@color/colorBrightGreen" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_transactions"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="96dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/filter_layout"
+            tools:listitem="@layout/rv_item_transaction" />
+
+        <!--    reuse cardview float bottom nav -->
     <include
         android:id="@+id/bottom_nav"
         layout="@layout/cardview_bottom_nav"
