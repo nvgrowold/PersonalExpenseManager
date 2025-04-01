@@ -10,11 +10,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TransactionRepository {
 
     private final TransactionDAO transactionDAO;
     private final FirebaseFirestore firestore;
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public TransactionRepository(Context context) {
         UserDB db = UserDB.getInstance(context);
@@ -24,6 +27,20 @@ public class TransactionRepository {
 
     public LiveData<List<TransactionEntity>> getRecentTransactions(String uid) {
         return transactionDAO.getRecentTransactions(uid);
+    }
+
+    // Fetch all transactions (LiveData) for a user from Room
+    public LiveData<List<TransactionEntity>> getAllTransactions(String firebaseUid) {
+        return transactionDAO.getAllTransactions(firebaseUid);
+    }
+
+    // Insert or update multiple transactions
+    public void insertOrReplaceTransactions(List<TransactionEntity> transactions) {
+        executor.execute(() -> {
+            for (TransactionEntity tx : transactions) {
+                transactionDAO.insertOrUpdate(tx);
+            }
+        });
     }
 
     public void fetchAndCacheTransactions(String uid) {
@@ -46,6 +63,10 @@ public class TransactionRepository {
                     Log.d("TransactionRepo", "Synced transactions from Firestore to Room");
                 })
                 .addOnFailureListener(e -> Log.e("TransactionRepo", "Failed to fetch Firestore transactions", e));
+    }
+
+    public void insertOrUpdate(TransactionEntity tx) {
+        executor.execute(() -> transactionDAO.insertOrUpdate(tx));
     }
 
     public void deleteAll() {

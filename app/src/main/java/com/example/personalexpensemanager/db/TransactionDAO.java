@@ -19,4 +19,11 @@ public interface TransactionDAO {
 
     @Query("DELETE FROM transactions")
     void deleteAllTransactions();
+
+    @Query("SELECT * FROM transactions WHERE firebaseUid = :firebaseUid ORDER BY date DESC")
+    LiveData<List<TransactionEntity>> getAllTransactions(String firebaseUid);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertOrUpdate(TransactionEntity transaction);
+
 }
