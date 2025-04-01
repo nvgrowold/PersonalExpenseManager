@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -44,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
     //identify the result of the Google sign-in activity
     private GoogleSignInClient mGoogleSignInClient;
-
+    private ActivityResultLauncher<Intent> googleSignInLauncher;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -120,10 +122,29 @@ public class LoginActivity extends AppCompatActivity {
         //create client -- initialise the google sign-in client
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         //set click listener, opens a pop-up to choose Google Account
+        googleSignInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                        try {
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+                            firebaseAuthWithGoogle(account.getIdToken());
+                        } catch (ApiException e) {
+                            Log.w("Google Sign-In", "signInResult:failed code=" + e.getStatusCode(), e);
+                            Toast.makeText(this, "Google sign-in failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Google Sign-In cancelled", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         btnGoogleLogin.setOnClickListener(v -> {
             Log.d("LoginActivity", "Google Sign-In button clicked");
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            startActivityForResult(signInIntent, RC_SIGN_IN);
+//            startActivityForResult(signInIntent, RC_SIGN_IN);   Replaced with deprecated method
+            googleSignInLauncher.launch(signInIntent); // ✅ Replaces deprecated method
         });
 
         //normal email + password login
@@ -224,26 +245,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    //Handle Google Sign-In Result
-    //Android gives us the result of startActivityForResult
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //Try to get user’s Google account
-        //If successful, get the token → use it to sign in with Firebase.
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                Log.w("Google Sign-In", "signInResult:failed code=" + e.getStatusCode(), e);
-                Toast.makeText(this, "Google sign-in failed.", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     //Convert the Google ID token to Firebase credentials and sign in
     //Once signed in, get the user's UID.
     private void firebaseAuthWithGoogle(String idToken) {
@@ -275,6 +276,9 @@ public class LoginActivity extends AppCompatActivity {
                                         } else {
                                             intent = new Intent(LoginActivity.this, DashboardActivity.class);
                                         }
+
+                                        // log BEFORE starting Dashboard
+                                        Log.d("Redirect", "Redirecting to DashboardActivity");
                                         startActivity(intent);
                                         finish();
 

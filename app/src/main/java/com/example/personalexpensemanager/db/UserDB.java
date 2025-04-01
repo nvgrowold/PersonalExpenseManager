@@ -6,13 +6,17 @@ import androidx.room.Database;
 import androidx.room.Insert;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
+
+import com.example.personalexpensemanager.db.utility.TimestampConverter;
 
 /**
  * Room Database for local caching (only for offline mode).
  * Firestore is the primary database.
  */
 
-@Database(entities = {UserEntity.class}, version = 1, exportSchema = false)
+@Database(entities = {UserEntity.class, TransactionEntity.class}, version = 2, exportSchema = false)
+@TypeConverters({TimestampConverter.class})
 public abstract class UserDB extends RoomDatabase { //defines UserDB as a subclass of RoomDatabase
                                                     //abstract because Room generates the implementation at runtime.
 
@@ -25,6 +29,7 @@ public abstract class UserDB extends RoomDatabase { //defines UserDB as a subcla
     public abstract UserDAO userDAO(); //declare an abstract method to get an instance of UserDAO
                                         // Room will generate the implementation of UserDAO at runtime
 
+    public abstract TransactionDAO transactionDAO();
     //build a userDB
     public static UserDB getInstance(Context context){
         boolean USE_ROOM_DB = true; // Toggle this to enable/disable RoomDB

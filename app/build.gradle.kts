@@ -31,6 +31,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
+//to find out which exact classes or methods are deprecated
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:deprecation")
+}
 
 dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.0")
