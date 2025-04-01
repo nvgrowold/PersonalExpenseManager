@@ -1,8 +1,11 @@
 package com.example.personalexpensemanager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -41,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth auth; // Firebase Authentication
     FirebaseFirestore db; // Firestore Database
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +61,10 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirmPassword = findViewById(R.id.edit_text_confirm_password);
         btnRegister = findViewById(R.id.btn_register);
         tvAlreadyHaveAccount = findViewById(R.id.text_view_already_have_account);
+
+        //view password icon click event
+        setupPasswordToggle(etPassword, R.drawable.icon_security);
+        setupPasswordToggle(etConfirmPassword, R.drawable.icon_security);
 
         //set input fields' Hint behavior, when user click hint gone
         InputHintRemover.setHintBehavior(etUsername, "Username");
@@ -181,6 +189,34 @@ public class RegisterActivity extends AppCompatActivity {
                 });
 
     }
+
+    //helper class for password view icon
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupPasswordToggle(EditText editText, int drawableLeftId) {
+        final boolean[] isVisible = {false};
+
+        editText.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (editText.getRight() - editText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    if (isVisible[0]) {
+                        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        editText.setCompoundDrawablesWithIntrinsicBounds(drawableLeftId, 0, R.drawable.icon_eye_off_24, 0);
+                        isVisible[0] = false;
+                    } else {
+                        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        editText.setCompoundDrawablesWithIntrinsicBounds(drawableLeftId, 0, R.drawable.icon_eye, 0);
+                        isVisible[0] = true;
+                    }
+                    editText.setSelection(editText.getText().length());
+                    v.performClick(); // to satisfy accessibility warning
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
 //
 //    //remove hint when user click and type in input field
 //    private void setHintBehavior(EditText editText, String hintText){

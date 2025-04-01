@@ -1,8 +1,11 @@
 package com.example.personalexpensemanager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +64,32 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.et_Password);
         tv_forgotPassword = findViewById(R.id.text_view_forgot_password);
         tv_register = findViewById(R.id.text_view_register);
+
+        //view password icon click event
+        final boolean[] isVisible = {false};
+        etPassword.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2; // index 0=left, 1=top, 2=right, 3=bottom
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (etPassword.getRight() - etPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+
+                    if (isVisible[0]) {
+                        etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        etPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_security, 0, R.drawable.icon_eye_off_24, 0);
+                        isVisible[0] = false;
+                    } else {
+                        etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        etPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_security, 0, R.drawable.icon_eye, 0);
+                        isVisible[0] = true;
+                    }
+
+                    etPassword.setSelection(etPassword.getText().length());
+                    return true;
+                }
+            }
+
+            return false;
+        });
 
         //set input fields' Hint behavior, when user click hint gone
         InputHintRemover.setHintBehavior(etEmail, "Email");
