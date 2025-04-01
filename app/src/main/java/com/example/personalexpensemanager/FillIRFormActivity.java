@@ -1,5 +1,6 @@
 package com.example.personalexpensemanager;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.personalexpensemanager.utility.InputHintRemover;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -78,6 +80,10 @@ public class FillIRFormActivity extends AppCompatActivity {
 
         btnSubmit.setOnClickListener(v -> submitIRForm());
 
+        //set input fields' Hint behavior, when user click hint gone
+        InputHintRemover.setHintBehavior(etDividends, "Dividens");
+        InputHintRemover.setHintBehavior(etOverseasIncome, "Overseas Income");
+        InputHintRemover.setHintBehavior(etDonations, "Donations");
 
         Button btnExportPdf = findViewById(R.id.btn_export_pdf);
         btnExportPdf.setOnClickListener(v -> {
@@ -101,7 +107,6 @@ public class FillIRFormActivity extends AppCompatActivity {
         //load once on launch
         String defaultYear = spinnerTaxYear.getSelectedItem().toString();
         loadUserData(defaultYear);
-
 
     }
 
@@ -178,10 +183,11 @@ public class FillIRFormActivity extends AppCompatActivity {
         double netIncome = incomeSum - expenseSum;
         double taxPayable = netIncome * taxRate;
 
-        tvTotalIncome.setText("$" + incomeSum);
-        tvTotalExpenses.setText("$" + expenseSum);
-        tvNetIncome.setText("$" + netIncome);
-        tvTaxPayable.setText("$" + taxPayable);
+        tvTotalIncome.setText("Total Income: " + formatCurrency(incomeSum));
+        tvTotalExpenses.setText("Total Expenses: " + "-" + formatCurrency(Math.abs(expenseSum))); // Show expenses as negative
+        tvNetIncome.setText("Taxable Amount: " + formatCurrency(netIncome));
+        tvTaxPayable.setText("Tax Payable: " + formatCurrency(taxPayable));
+
     }
 
     private void submitIRForm() {
@@ -264,13 +270,15 @@ public class FillIRFormActivity extends AppCompatActivity {
             document.add(new Paragraph("IR3 Individual Income Tax Return")
                     .setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
 
+            document.add(new Paragraph("--- Income Summary ---"));
             document.add(new Paragraph("\nTax Year: " + taxYear));
             document.add(new Paragraph("Username: " + tvUsername.getText()));
             document.add(new Paragraph("Total Income: " + formatCurrency(incomeSum)));
             document.add(new Paragraph("Total Expenses: " + formatCurrency(Math.abs(expenseSum))));
-            document.add(new Paragraph("Net Income: " + formatCurrency(incomeSum - expenseSum)));
+            document.add(new Paragraph("Taxable Amount: " + formatCurrency(incomeSum - expenseSum)));
             document.add(new Paragraph("Tax Payable: " + formatCurrency((incomeSum - expenseSum) * taxRate)));
 
+            document.add(new Paragraph("--- Additional Inputs ---"));
             document.add(new Paragraph("Dividends: " + formatCurrency(parseDouble(etDividends.getText().toString()))));
             document.add(new Paragraph("Overseas Income: " + formatCurrency(parseDouble(etOverseasIncome.getText().toString()))));
             document.add(new Paragraph("Donations: " + formatCurrency(parseDouble(etDonations.getText().toString()))));
@@ -318,6 +326,13 @@ public class FillIRFormActivity extends AppCompatActivity {
                             .document(userId)
                             .delete(); // ✅ Mark as completed
 
+                    Toast.makeText(this, "Form completed. Returning to dashboard.", Toast.LENGTH_SHORT).show();
+
+                    // 🔁 Return to DashboardAccountantActivity and refresh it
+                    Intent intent = new Intent(FillIRFormActivity.this, DashboardAccountantActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish(); // Finish current activity
 
                 })
                 .addOnFailureListener(e -> {

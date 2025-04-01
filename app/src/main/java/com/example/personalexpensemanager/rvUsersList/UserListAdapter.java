@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.personalexpensemanager.FillIRFormActivity;
 import com.example.personalexpensemanager.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
@@ -147,11 +148,35 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                             btnFillIrForm.setVisibility(View.VISIBLE);
 
                                             if (formDoc.exists() && formDoc.contains("pdfUrl")) {
-                                                Context context = itemView.getContext();
-                                                btnFillIrForm.setText("\u2713"); // Unicode checkmark ✓
-                                                btnFillIrForm.setTextSize(18);
-                                                btnFillIrForm.setBackgroundColor(ContextCompat.getColor(context, R.color.colorBrightGreen));
-                                                btnFillIrForm.setTextColor(Color.WHITE);
+                                                // ✅ Check if request has been re-submitted
+                                                FirebaseFirestore.getInstance()
+                                                        .collection("requests")
+                                                        .document(user.uid)
+                                                        .get()
+                                                        .addOnSuccessListener(requestSnapshot -> {
+                                                            if (requestSnapshot.exists()) {
+                                                                Context context = itemView.getContext();
+                                                                // User re-requested IR form after completion — reset button
+                                                                btnFillIrForm.setText("Fill IR Form");
+                                                                btnFillIrForm.setEnabled(true);
+                                                                btnFillIrForm.setTextSize(14);
+                                                                btnFillIrForm.setBackgroundResource(R.drawable.button_hover); // optional reset
+                                                                btnFillIrForm.setTextColor(ContextCompat.getColor(context, R.color.colorBrightGreen));
+                                                                btnFillIrForm.setOnClickListener(v -> {
+                                                                    Intent intent = new Intent(context, FillIRFormActivity.class);
+                                                                    intent.putExtra("userId", user.uid);
+                                                                    context.startActivity(intent);
+                                                                });
+                                                            } else {
+                                                                // ✅ No request → keep tick ✓
+                                                                Context context = itemView.getContext();
+                                                                btnFillIrForm.setText("\u2713");
+                                                                btnFillIrForm.setTextSize(18);
+                                                                btnFillIrForm.setBackgroundColor(ContextCompat.getColor(context, R.color.colorBrightGreen));
+                                                                btnFillIrForm.setTextColor(Color.WHITE);
+                                                                btnFillIrForm.setEnabled(false);
+                                                            }
+                                                        });
 
                                                 //btnFillIrForm.setEnabled(false); // Optional
                                             } else {
