@@ -163,6 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 String userID = auth.getCurrentUser().getUid();
+                                Log.d("LoginSuccess", "Logged in with UID = " + userID);
                                 db.collection("users").document(userID).get()
                                         .addOnSuccessListener(documentSnapshot -> {
                                             if (documentSnapshot.exists()) {

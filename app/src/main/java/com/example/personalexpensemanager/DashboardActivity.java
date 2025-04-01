@@ -2,12 +2,14 @@ package com.example.personalexpensemanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.personalexpensemanager.db.UserRepository;
 import com.example.personalexpensemanager.transaction.DateHeader;
 import com.example.personalexpensemanager.transaction.Transaction;
 import com.example.personalexpensemanager.transaction.TransactionAdapter;
@@ -33,16 +36,33 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+//Integrate Room User Cache
+import com.example.personalexpensemanager.db.UserEntity;
+import com.example.personalexpensemanager.db.UserRepository;
+
+/* Room DB offline workflow
+* If user opens app offline → they immediately see “Hello, [cached username]”
+
+When internet is restored → updated Firestore data replaces cache silently
+
+Avatar is shown from Firestore if available*/
+
+
 public class DashboardActivity extends AppCompatActivity {
 
     TextView tvHelloUser, tvBalance, tvIncome, tvExpense;
     ImageView avatarView;
     FirebaseUser user;
+    FirebaseAuth auth;
+
     ImageButton imageButtonAdd;
 
     RecyclerView rv;
     TransactionAdapter adapter;
     List<TransactionItem> items;
+
+    //Integrate Room User Cache
+    UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +74,18 @@ public class DashboardActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        // to confirm whether user is initialised when enter DashboardActivity
+        if (user == null) {
+            Log.e("DashboardDebug", "User is NULL!");
+            Toast.makeText(this, "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            return;
+        }
+        //verify user state
+        Log.d("DashboardDebug", "User = " + FirebaseAuth.getInstance().getCurrentUser());
 
         tvHelloUser = findViewById(R.id.tv_hello_user);
         avatarView = findViewById(R.id.iv_avatar);
@@ -98,7 +130,18 @@ public class DashboardActivity extends AppCompatActivity {
                     tvExpense.setText("-$0.00");
                 });
 
+    // 1. Load from Room cache first
+        //pull from RoomDB, even if Firestore isn’t available.
+        userRepository = new UserRepository(this);
+        if (userRepository != null) {
+            userRepository.getUserByUid(user.getUid()).observe(this, localUser -> {
+                if (localUser != null) {
+                    tvHelloUser.setText("Hello, " + localUser.getUsername());
+                }
+            });
+        }
 
+    // 2. Fetch latest user info from Firestore and update Room
 
         if(user != null){
             FirebaseFirestore.getInstance()
@@ -108,7 +151,16 @@ public class DashboardActivity extends AppCompatActivity {
                     .addOnSuccessListener(documentSnapshot -> {
                         if(documentSnapshot.exists()){
                             String username = documentSnapshot.getString("username");
+                            String email = documentSnapshot.getString("email");
+                            String role = documentSnapshot.getString("role");
+                            String balance = documentSnapshot.getString("balance");
+
                             tvHelloUser.setText("Hello, " + username);
+
+                            // update room cache
+                            UserEntity updatedUser = new UserEntity(user.getUid(), username, email, role, balance);
+                            new Thread(() -> userRepository.insertUser(updatedUser)).start();
+
                             //load user icon/photo from firestore
                             if (user.getPhotoUrl() != null) {
                                 Glide.with(this)

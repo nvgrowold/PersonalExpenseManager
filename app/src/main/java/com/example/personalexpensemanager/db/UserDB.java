@@ -27,7 +27,7 @@ public abstract class UserDB extends RoomDatabase { //defines UserDB as a subcla
 
     //build a userDB
     public static UserDB getInstance(Context context){
-        boolean USE_ROOM_DB = false; // Toggle this to enable/disable RoomDB
+        boolean USE_ROOM_DB = true; // Toggle this to enable/disable RoomDB
 
         if (!USE_ROOM_DB) {
             return null; // Skip RoomDB initialization
