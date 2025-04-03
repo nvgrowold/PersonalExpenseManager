@@ -72,4 +72,8 @@ public class TransactionRepository {
     public void deleteAll() {
         new Thread(transactionDAO::deleteAllTransactions).start();
     }
+
+    public void deleteTransactionById(String tid) {
+        executor.execute(() -> transactionDAO.deleteByTid(tid));
+    }
 }

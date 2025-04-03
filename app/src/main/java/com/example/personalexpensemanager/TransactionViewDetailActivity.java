@@ -19,6 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.personalexpensemanager.db.TransactionRepository;
 import com.example.personalexpensemanager.transaction.Transaction;
 import com.example.personalexpensemanager.utility.CategorySpinnerAdapter;
 import com.example.personalexpensemanager.utility.InputHintRemover;
@@ -39,6 +40,8 @@ public class TransactionViewDetailActivity extends AppCompatActivity {
     Button btnSave, btnDelete;
 
     ImageButton btnGoback;
+
+    TransactionRepository transactionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class TransactionViewDetailActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.btn_delete);
         btnGoback = findViewById(R.id.imageButton_go_back);
 
+        transactionRepository = new TransactionRepository(this);
 
         //set input fields' Hint behavior, when user click hint gone
         InputHintRemover.setHintBehavior(editTextName, "Transaction Name");
@@ -201,6 +205,8 @@ public class TransactionViewDetailActivity extends AppCompatActivity {
                                     .document(transactionId)
                                     .delete()
                                     .addOnSuccessListener(unused -> {
+                                        //delete transaction from local room db as well
+                                        transactionRepository.deleteTransactionById(transactionId);
                                         Toast.makeText(this, "Transaction deleted!", Toast.LENGTH_SHORT).show();
                                         finish(); // Return to previous screen
                                     })
