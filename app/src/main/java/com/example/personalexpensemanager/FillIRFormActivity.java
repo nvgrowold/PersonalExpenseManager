@@ -81,7 +81,7 @@ public class FillIRFormActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(v -> submitIRForm());
 
         //set input fields' Hint behavior, when user click hint gone
-        InputHintRemover.setHintBehavior(etDividends, "Dividens");
+        InputHintRemover.setHintBehavior(etDividends, "Dividends");
         InputHintRemover.setHintBehavior(etOverseasIncome, "Overseas Income");
         InputHintRemover.setHintBehavior(etDonations, "Donations");
 
@@ -103,11 +103,6 @@ public class FillIRFormActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
-        //load once on launch
-        String defaultYear = spinnerTaxYear.getSelectedItem().toString();
-        loadUserData(defaultYear);
-
     }
 
     private void setupTaxYearSpinner() {
@@ -121,6 +116,11 @@ public class FillIRFormActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_text_item_years, years);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_years);
         spinnerTaxYear.setAdapter(adapter);
+
+        // Move loadUserData call here so it's only triggered once when spinner is ready
+        spinnerTaxYear.post(() -> {
+            spinnerTaxYear.setSelection(0); // this will trigger the onItemSelected once
+        });
     }
 
     private void loadUserData(String taxYear) {
@@ -180,7 +180,7 @@ public class FillIRFormActivity extends AppCompatActivity {
     }
 
     private void updateCalculatedFields() {
-        double netIncome = incomeSum - expenseSum;
+        double netIncome = incomeSum - (- expenseSum);
         double taxPayable = netIncome * taxRate;
 
         tvTotalIncome.setText("Total Income: " + formatCurrency(incomeSum));
