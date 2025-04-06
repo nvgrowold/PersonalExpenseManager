@@ -20,6 +20,11 @@ public interface TransactionDAO {
     @Query("DELETE FROM transactions")
     void deleteAllTransactions();
 
+    //delete from local room db
+    @Query("DELETE FROM transactions WHERE tid = :tid")
+    void deleteByTid(String tid);
+
+
     @Query("SELECT * FROM transactions WHERE firebaseUid = :firebaseUid ORDER BY date DESC")
     LiveData<List<TransactionEntity>> getAllTransactions(String firebaseUid);
 
