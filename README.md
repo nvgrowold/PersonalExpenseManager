@@ -30,8 +30,10 @@ A full-featured Android app for personal and financial management, supporting cl
 - Custom icons and UI with categorized transactions
 
 ## 📷 Screenshots
-
-
+![Screenshot 1](./Picture1.png)
+![Screenshot 2](./Picture2.png)
+![Screenshot 3](./Picture3.png)
+![Screenshot 4](./Picture4.png)
 
 ## 📝 How to run
 
